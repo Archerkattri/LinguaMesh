@@ -25,6 +25,9 @@ jobs:
           cache: maven
       - name: Test and package core
         run: mvn -B -ntp -Dgpg.skip=true clean verify
+      - name: Validate Central publishing profile
+        if: matrix.java == '21'
+        run: mvn -B -ntp -Pcentral-publishing -Dgpg.skip=true -DskipTests validate
 
   icu4j-provider:
     name: ICU4J provider (Java 11)
