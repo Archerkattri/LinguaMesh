@@ -55,3 +55,18 @@ jobs:
         run: mvn -B -ntp -Dgpg.skip=true install
       - name: Test and package the Lucene 10 provider
         run: mvn -B -ntp -f providers/lucene10/pom.xml clean verify
+
+  opennlp-provider:
+    name: OpenNLP provider (Java 17)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+      - name: Install the core and run its tests
+        run: mvn -B -ntp -Dgpg.skip=true install
+      - name: Test and package the OpenNLP provider
+        run: mvn -B -ntp -f providers/opennlp/pom.xml clean verify

@@ -14,6 +14,7 @@ This repository imports the history and code of [Ansj Seg](https://github.com/NL
 | `ansj` | Chinese | Existing dictionaries and analysis behavior; retains the `org.ansj` compatibility API. |
 | `icu4j` | Unicode word boundaries for locale-tagged text | General segmentation fallback, not a substitute for language-specific morphology. ICU supplies dictionary word breaking for Chinese, Japanese, Thai, Lao, Khmer, and Burmese. |
 | `lucene10` | Arabic, Armenian, Basque, Bengali, Brazilian Portuguese, Bulgarian, Catalan, Chinese/Japanese/Korean, Czech, Danish, Dutch, English, Estonian, Finnish, French, Galician, German, Greek, Hindi, Hungarian, Indonesian, Irish, Italian, Latvian, Lithuanian, Nepali, Norwegian, Persian, Portuguese, Romanian, Russian, Serbian, Sorani Kurdish, Spanish, Swedish, Tamil, Telugu, Thai, and Turkish; generic Unicode fallback for other tags | Uses Lucene language analyzers for the listed languages and `StandardAnalyzer` otherwise. Some analyzers normalize, remove stop words, or stem; offsets still refer to the input. Requires Java 21. |
+| `opennlp` | Languages for which the application supplies a compatible OpenNLP tokenizer model | The model is application-provided and not bundled. Apache lists 36 language-specific model sets across several NLP tasks; coverage is task-specific. Requires Java 17. |
 
 Providers are optional Maven dependencies discovered with Java `ServiceLoader`. Tokens include UTF-16 offsets into the source and engine-specific attributes; token text may be normalized. Multiple engines can support the same language, so select the provider explicitly for predictable behavior.
 
@@ -37,6 +38,36 @@ Add the Lucene 10 provider for language-specific search analysis:
   <artifactId>linguamesh-provider-lucene10</artifactId>
   <version>1.0.0-SNAPSHOT</version>
 </dependency>
+```
+
+Add the OpenNLP provider when an application supplies tokenizer models:
+
+```xml
+<dependency>
+  <groupId>io.github.archerkattri</groupId>
+  <artifactId>linguamesh-provider-opennlp</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+</dependency>
+```
+
+Load each model under an explicit BCP 47 language tag. LinguaMesh does not download or redistribute model files:
+
+```java
+import io.linguamesh.api.TextTokenizer;
+import io.linguamesh.opennlp.OpenNlpTokenizerProvider;
+import opennlp.tools.tokenize.TokenizerModel;
+
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Collections;
+
+TokenizerModel model;
+try (InputStream input = Files.newInputStream(Path.of("models/en-token.bin"))) {
+    model = new TokenizerModel(input);
+}
+TextTokenizer tokenizer = new OpenNlpTokenizerProvider(Collections.singletonMap("en", model))
+        .create("en-US");
 ```
 
 Add the ICU4J provider when Unicode boundary tokenization is needed:
@@ -74,11 +105,20 @@ mvn -B -ntp clean verify
 mvn -B -ntp install
 mvn -B -ntp -f providers/icu4j/pom.xml clean verify
 mvn -B -ntp -f providers/lucene10/pom.xml clean verify
+mvn -B -ntp -f providers/opennlp/pom.xml clean verify
 ```
 
-The core targets Java 8. ICU4J 78.3 requires Java 11, and the Lucene 10 provider requires Java 21.
+The core targets Java 8. ICU4J 78.3 requires Java 11, OpenNLP 2.5.12 requires Java 17, and the Lucene 10 provider requires Java 21.
 
 The historical integrations under `plugin/` are retained from Ansj for reference and compatibility; the new provider API is the extension point for current integrations.
+
+## Maven Central release
+
+The `central-publishing` profile prepares signed artifacts and uploads them to the Central Portal for validation; it leaves the final publish action manual. A release requires a non-snapshot version, a verified `io.github.archerkattri` namespace, a GPG signing key, and a `central` user-token entry in the developer's Maven `settings.xml`. Never commit those credentials. The current version is a development snapshot and has not been published.
+
+```sh
+mvn -Pcentral-publishing clean deploy
+```
 
 ## Credit and license
 
