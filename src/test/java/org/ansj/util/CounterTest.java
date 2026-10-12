@@ -1,6 +1,5 @@
 package org.ansj.util;
 
-import org.ansj.domain.Result;
 import org.ansj.splitWord.Analysis;
 import org.ansj.splitWord.analysis.BaseAnalysis;
 import org.junit.Rule;
@@ -31,7 +30,7 @@ public class CounterTest {
         Files.write(nested.resolve("ignored.bin"), "ignored".getBytes(StandardCharsets.UTF_8));
 
         Analysis analysis = new BaseAnalysis();
-        Result result = Counter.count(root.toFile(), "UTF-8", analysis, 20);
+        Counter.Result result = Counter.count(root.toFile(), "UTF-8", analysis, 20);
 
         assertEquals(analysis.parseStr(rootText).size() + analysis.parseStr(nestedText).size(), totalCount(result));
     }
