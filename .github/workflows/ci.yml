@@ -135,3 +135,47 @@ jobs:
           done
       - name: Validate Central publishing profile
         run: mvn -B -ntp -Pcentral-publishing -Dgpg.skip=true -DskipTests -f providers/opennlp/pom.xml validate
+
+  sudachi-provider:
+    name: Sudachi provider (Java 8)
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '8'
+          cache: maven
+      - name: Download the pinned Sudachi V0 test dictionary
+        shell: bash
+        run: |
+          archive="$RUNNER_TEMP/sudachi-dictionary-20260723-core.zip"
+          directory="$RUNNER_TEMP/sudachi-dictionary"
+          curl --fail --location --retry 3 --output "$archive" \
+            https://sudachi.s3.ap-northeast-1.amazonaws.com/sudachidict/sudachi-dictionary-20260723-core.zip
+          echo "b6e835f63440f97474c2da45d80950f73746e632e40bbfc168b4041729135e1f  $archive" | sha256sum --check --status
+          mkdir -p "$directory"
+          unzip -q "$archive" -d "$directory"
+          dictionary=$(find "$directory" -type f -name system_core.dic -print -quit)
+          test -n "$dictionary"
+          echo "SUDACHI_DICTIONARY_PATH=$dictionary" >> "$GITHUB_ENV"
+      - name: Install the core and run its tests
+        run: mvn -B -ntp -Dgpg.skip=true install
+      - name: Test and package the Sudachi provider
+        run: mvn -B -ntp -f providers/sudachi/pom.xml clean verify
+      - name: Verify license and notice in the provider JAR
+        shell: bash
+        run: |
+          test -f providers/sudachi/target/linguamesh-provider-sudachi-1.0.0-SNAPSHOT-javadoc.jar
+          for archive in providers/sudachi/target/linguamesh-provider-sudachi-1.0.0-SNAPSHOT.jar providers/sudachi/target/linguamesh-provider-sudachi-1.0.0-SNAPSHOT-sources.jar; do
+            test -f "$archive"
+            for resource in META-INF/LICENSE.txt META-INF/NOTICE.txt; do
+              count=$(jar tf "$archive" | grep -Fxc "$resource" || true)
+              if [ "$count" -ne 1 ]; then
+                echo "Expected exactly one $resource in $archive; found $count"
+                exit 1
+              fi
+            done
+          done
+      - name: Validate Central publishing profile
+        run: mvn -B -ntp -Pcentral-publishing -Dgpg.skip=true -DskipTests -f providers/sudachi/pom.xml validate

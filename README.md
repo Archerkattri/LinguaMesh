@@ -14,6 +14,7 @@ This repository imports the history and code of [Ansj Seg](https://github.com/NL
 | `ansj` | Chinese | Existing dictionaries and analysis behavior; retains the `org.ansj` compatibility API. |
 | `icu4j` | Unicode word boundaries for locale-tagged text | General segmentation fallback, not a substitute for language-specific morphology. ICU supplies dictionary word breaking for Chinese, Japanese, Thai, Lao, Khmer, and Burmese. |
 | `lucene10` | Arabic, Armenian, Basque, Bengali, Brazilian Portuguese, Bulgarian, Catalan, Chinese, Czech, Danish, Dutch, English, Estonian, Finnish, French, Galician, German, Greek, Hindi, Hungarian, Indonesian, Irish, Italian, Japanese, Korean, Latvian, Lithuanian, Nepali, Norwegian, Persian, Portuguese, Romanian, Russian, Serbian, Sorani Kurdish, Spanish, Swedish, Tamil, Telugu, Thai, and Turkish; generic Unicode fallback for other tags | Uses Lucene language analyzers, Kuromoji for Japanese morphology, Nori for Korean morphology, and `CJKAnalyzer` for Chinese; `StandardAnalyzer` is the generic fallback. Some analyzers normalize, remove stop words, or stem; offsets still refer to the input. Requires Java 21. |
+| `sudachi` | Japanese | Morphological analysis with configurable A/B/C segmentation, POS, reading, dictionary-form, normalized-form, and OOV attributes. Requires a caller-provided Sudachi V0 dictionary compatible with the pinned 0.8.0 API; no dictionary is bundled. SudachiDict includes UniDic and NEologd data, so follow the dictionary's separate notices when redistributing it. Requires Java 8. |
 | `opennlp` | Languages for which the application supplies a compatible OpenNLP tokenizer model | The model is application-provided and not bundled. Apache lists 36 language-specific model sets across several NLP tasks; coverage is task-specific. Requires Java 17. |
 
 Providers are optional Maven dependencies discovered with Java `ServiceLoader`. Tokens include UTF-16 offsets into the source and engine-specific attributes; token text may be normalized. Multiple engines can support the same language, so select the provider explicitly for predictable behavior.
@@ -70,6 +71,34 @@ TextTokenizer tokenizer = new OpenNlpTokenizerProvider(Collections.singletonMap(
         .create("en-US");
 ```
 
+Add the Sudachi provider for Japanese morphological analysis. It does not bundle or download a dictionary; load a compatible Sudachi V0 dictionary and keep the `Dictionary` instance alive while using its tokenizers. The `ServiceLoader` provider uses Sudachi's `Config.defaultConfig()`; the explicit constructor below lets applications select a split mode:
+
+```xml
+<dependency>
+  <groupId>io.github.archerkattri</groupId>
+  <artifactId>linguamesh-provider-sudachi</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+</dependency>
+```
+
+```java
+import com.worksap.nlp.sudachi.Config;
+import com.worksap.nlp.sudachi.Dictionary;
+import com.worksap.nlp.sudachi.DictionaryFactory;
+import com.worksap.nlp.sudachi.Tokenizer;
+import io.linguamesh.api.TextTokenizer;
+import io.linguamesh.sudachi.SudachiTokenizerProvider;
+
+import java.io.IOException;
+import java.nio.file.Paths;
+
+Config config = Config.defaultConfig();
+config.systemDictionary(Paths.get("models/system_core.dic"));
+Dictionary dictionary = new DictionaryFactory().create(config);
+SudachiTokenizerProvider provider = new SudachiTokenizerProvider(dictionary, Tokenizer.SplitMode.B);
+TextTokenizer tokenizer = provider.create("ja-JP");
+```
+
 Add the ICU4J provider when Unicode boundary tokenization is needed:
 
 ```xml
@@ -108,9 +137,10 @@ mvn -B -ntp install
 mvn -B -ntp -f providers/icu4j/pom.xml clean verify
 mvn -B -ntp -f providers/lucene10/pom.xml clean verify
 mvn -B -ntp -f providers/opennlp/pom.xml clean verify
+mvn -B -ntp -f providers/sudachi/pom.xml clean verify
 ```
 
-The core targets Java 8. ICU4J 78.3 requires Java 11, OpenNLP 2.5.12 requires Java 17, and the Lucene 10 provider requires Java 21.
+The Sudachi integration tests use `SUDACHI_DICTIONARY_PATH` when set; CI downloads a pinned test dictionary and does not package it. The core and Sudachi provider target Java 8. ICU4J 78.3 requires Java 11, OpenNLP 2.5.12 requires Java 17, and the Lucene 10 provider requires Java 21.
 
 The historical integrations under `plugin/` are retained from Ansj for reference and compatibility; the new provider API is the extension point for current integrations.
 
