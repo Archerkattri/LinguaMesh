@@ -4,6 +4,7 @@ import io.linguamesh.api.TextToken;
 import io.linguamesh.api.TextTokenizer;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertFalse;
@@ -22,6 +23,16 @@ public class Lucene10TokenizerProviderTest {
         List<TextToken> tokens = tokenizer.tokenize("ሰላም ዓለም");
         assertFalse(tokens.isEmpty());
         assertTrue(tokens.get(0).getStartOffset() >= 0);
+    }
+
+    @Test
+    public void constructsEveryLanguageAnalyzerProvidedByLuceneCommon() {
+        for (String languageTag : Arrays.asList("ar", "bg", "bn", "ca", "ckb", "cs", "da", "de", "el",
+                "en", "es", "et", "eu", "fa", "fi", "fr", "ga", "gl", "hi", "hu", "hy", "id", "it",
+                "lt", "lv", "ne", "nl", "no", "pt", "pt-BR", "ro", "ru", "sr", "sv", "ta", "te", "th",
+                "tr", "zh", "ja", "ko")) {
+            assertTokenRanges(languageTag, "example text for tokenizer 2026");
+        }
     }
 
     private static void assertTokenRanges(String languageTag, String text) {

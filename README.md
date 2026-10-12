@@ -13,7 +13,7 @@ This repository imports the history and code of [Ansj Seg](https://github.com/NL
 |---|---|---|
 | `ansj` | Chinese | Existing dictionaries and analysis behavior; retains the `org.ansj` compatibility API. |
 | `icu4j` | Unicode word boundaries for locale-tagged text | General segmentation fallback, not a substitute for language-specific morphology. ICU supplies dictionary word breaking for Chinese, Japanese, Thai, Lao, Khmer, and Burmese. |
-| `lucene10` | Arabic, Chinese/Japanese/Korean, English, French, German, Hindi, Italian, Russian, Spanish, Thai; generic Unicode fallback for other tags | Uses Lucene language analyzers for the listed languages and `StandardAnalyzer` otherwise. Some analyzers normalize, remove stop words, or stem; offsets still refer to the input. Requires Java 21. |
+| `lucene10` | Arabic, Armenian, Basque, Bengali, Brazilian Portuguese, Bulgarian, Catalan, Chinese/Japanese/Korean, Czech, Danish, Dutch, English, Estonian, Finnish, French, Galician, German, Greek, Hindi, Hungarian, Indonesian, Irish, Italian, Latvian, Lithuanian, Nepali, Norwegian, Persian, Portuguese, Romanian, Russian, Serbian, Sorani Kurdish, Spanish, Swedish, Tamil, Telugu, Thai, and Turkish; generic Unicode fallback for other tags | Uses Lucene language analyzers for the listed languages and `StandardAnalyzer` otherwise. Some analyzers normalize, remove stop words, or stem; offsets still refer to the input. Requires Java 21. |
 
 Providers are optional Maven dependencies discovered with Java `ServiceLoader`. Tokens include UTF-16 offsets into the source and engine-specific attributes; token text may be normalized. Multiple engines can support the same language, so select the provider explicitly for predictable behavior.
 
