@@ -2,11 +2,11 @@ package io.linguamesh.sudachi;
 
 import com.worksap.nlp.sudachi.Config;
 import com.worksap.nlp.sudachi.Dictionary;
-import com.worksap.nlp.sudachi.DictionaryFactory;
 import com.worksap.nlp.sudachi.Tokenizer;
 import io.linguamesh.api.TextToken;
 import io.linguamesh.api.TextTokenizer;
 import io.linguamesh.api.TextTokenizerRegistry;
+import org.junit.AfterClass;
 import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -36,7 +36,14 @@ public class SudachiTokenizerProviderTest {
         Assume.assumeTrue("Sudachi dictionary file is unavailable", Files.isRegularFile(dictionaryPath));
         Config config = Config.defaultConfig();
         config.systemDictionary(dictionaryPath);
-        dictionary = new DictionaryFactory().create(config);
+        dictionary = Dictionary.load(config);
+    }
+
+    @AfterClass
+    public static void closeDictionary() throws IOException {
+        if (dictionary != null) {
+            dictionary.close();
+        }
     }
 
     @Test

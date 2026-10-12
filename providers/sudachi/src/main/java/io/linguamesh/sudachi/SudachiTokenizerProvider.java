@@ -2,9 +2,7 @@ package io.linguamesh.sudachi;
 
 import com.worksap.nlp.sudachi.Config;
 import com.worksap.nlp.sudachi.Dictionary;
-import com.worksap.nlp.sudachi.DictionaryFactory;
 import com.worksap.nlp.sudachi.Morpheme;
-import com.worksap.nlp.sudachi.MorphemeList;
 import com.worksap.nlp.sudachi.Tokenizer;
 import io.linguamesh.api.TextToken;
 import io.linguamesh.api.TextTokenizer;
@@ -59,7 +57,7 @@ public final class SudachiTokenizerProvider implements TextTokenizerProvider {
         if (!"ja".equalsIgnoreCase(java.util.Locale.forLanguageTag(normalized).getLanguage())) {
             throw new IllegalArgumentException("sudachi does not support " + normalized);
         }
-        return new SudachiTokenizer(normalized, dictionary().create(), splitMode);
+        return new SudachiTokenizer(normalized, dictionary().tokenizer(), splitMode);
     }
 
     private Dictionary dictionary() {
@@ -71,7 +69,7 @@ public final class SudachiTokenizerProvider implements TextTokenizerProvider {
             current = dictionary;
             if (current == null) {
                 try {
-                    current = new DictionaryFactory().create(Config.defaultConfig());
+                    current = Dictionary.load(Config.defaultConfig());
                 } catch (IOException exception) {
                     throw new IllegalStateException(
                             "Configure a Sudachi dictionary or pass one to SudachiTokenizerProvider", exception);
@@ -109,7 +107,7 @@ public final class SudachiTokenizerProvider implements TextTokenizerProvider {
             if (text.isEmpty()) {
                 return Collections.emptyList();
             }
-            MorphemeList morphemes = tokenizer.tokenize(splitMode, text);
+            List<Morpheme> morphemes = tokenizer.tokenize(splitMode, text);
             List<TextToken> tokens = new ArrayList<TextToken>(morphemes.size());
             for (int i = 0; i < morphemes.size(); i++) {
                 Morpheme morpheme = morphemes.get(i);
