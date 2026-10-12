@@ -1,60 +1,65 @@
-Ansj中文分词
-==================
+# Ansj Seg
 
- [![1.X Build Status](https://travis-ci.org/NLPchina/ansj_seg.svg?branch=master)](https://travis-ci.org/NLPchina/ansj_seg) [![Gitter](https://badges.gitter.im/NLPchina/ansj_seg.svg)](https://gitter.im/NLPchina/ansj_seg?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+Ansj Seg is a Java library for Chinese word segmentation. It includes several analysis modes, term and entity recognition, custom dictionaries, keyword extraction, and text summarization.
 
+[![Java CI](https://github.com/Archerkattri/ansj_seg/actions/workflows/ci.yml/badge.svg)](https://github.com/Archerkattri/ansj_seg/actions/workflows/ci.yml)
+[![Apache-2.0 license](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE.txt)
 
-#####  使用帮助
-* 开发文档：[3.x版本及之前](http://nlpchina.github.io/ansj_seg/)，[5.x版本及之后](https://github.com/NLPchina/ansj_seg/wiki)
+## About this repository
 
+This repository is an English-maintained fork of [NLPchina/ansj_seg](https://github.com/NLPchina/ansj_seg). It retains the upstream Java packages and Maven coordinates for source compatibility. This fork has not published a Maven release; the dependency below refers to the upstream artifact.
 
+The project keeps its Apache License 2.0 notice and upstream attribution. It is an independent fork and is not an official NLPchina release.
 
-##### 摘要
-> 这是一个基于n-Gram+CRF+HMM的中文分词的java实现。
+## Requirements
 
-> 分词速度达到每秒钟大约200万字左右（mac air下测试），准确率能达到96%以上。
+- Java 8 or newer for the core library.
+- Java 11 or newer for the Lucene 9 adapter in `plugin/ansj_lucene9_plugin`.
+- Maven 3.6.3 or newer.
 
-> 目前实现了中文分词、中文姓名识别、用户自定义词典、关键字提取、自动摘要、关键字标记等功能。
+## Build and test
 
-> 可以应用到自然语言处理等方面，适用于对分词效果要求高的各种项目。
+Run the core test suite and create the library, sources, and Javadoc artifacts:
 
+```sh
+mvn -B -ntp -Dgpg.skip=true clean verify
+```
 
+The Lucene 9 adapter is built separately after installing the core artifact locally:
 
+```sh
+mvn -B -ntp -Dgpg.skip=true install
+mvn -B -ntp -Dgpg.skip=true -f plugin/ansj_lucene9_plugin/pom.xml clean verify
+```
 
-#####  maven
+Other adapters under `plugin/` target older Lucene or Solr releases. They are retained for compatibility and are not covered by the current CI build.
 
-````
-        
-        <dependency>
-            <groupId>org.ansj</groupId>
-            <artifactId>ansj_seg</artifactId>
-            <version>5.1.1</version>
-        </dependency>
-    
-````
+## Basic usage
 
-#####  调用demo
+```java
+import org.ansj.domain.Term;
+import org.ansj.splitWord.analysis.ToAnalysis;
 
-如果你第一次下载只想测试测试效果可以调用这个简易接口
+String text = "欢迎使用中文分词";
+for (Term term : ToAnalysis.parse(text)) {
+    System.out.println(term.getName() + "\t" + term.getNatureStr());
+}
+```
 
-<pre><code>
- String str = "欢迎使用ansj_seg,(ansj中文分词)在这里如果你遇到什么问题都可以联系我.我一定尽我所能.帮助大家.ansj_seg更快,更准,更自由!" ;
- System.out.println(ToAnalysis.parse(str));
- 
- ﻿欢迎/v,使用/v,ansj/en,_,seg/en,,,(,ansj/en,中文/nz,分词/n,),在/p,这里/r,如果/c,你/r,遇到/v,什么/r,问题/n,都/d,可以/v,联系/v,我/r,./m,我/r,一定/d,尽我所能/l,./m,帮助/v,大家/r,./m,ansj/en,_,seg/en,更快/d,,,更/d,准/a,,,更/d,自由/a,!
-</code></pre>
+`ToAnalysis` is the general-purpose entry point. The library also provides `BaseAnalysis`, `IndexAnalysis`, `DicAnalysis`, and `NlpAnalysis`; choose an analyzer based on the segmentation behavior your application needs.
 
+## Dictionaries and models
 
-#####  Join Us
+Dictionary and model files are not included in this repository. The tracked `ansj_library.properties` points to local files under `library/`, which is intentionally excluded from version control. Supply the files required by the analyzer and recognition features you use, and configure their paths before parsing. Missing files can cause dictionary initialization errors, especially in packaged or Android applications.
 
-想了很久，不管有没有人帮忙吧。我写上来，如果你有兴趣，有热情可以联系我。
+For a custom word dictionary, each line contains a word, part of speech, and frequency separated by tab characters:
 
-* 补充文档，增加调用实例和说明
-* 增加一些规则性Recognition，举例[身份证号码识别](https://github.com/NLPchina/ansj_seg/blob/master/src/main/java/org/ansj/recognition/impl/IDCardRecognition.java)，目前未完成的有 `时间识别`，`IP地址识别`，`邮箱识别`，`网址识别`，`词性识别`等...
-* 提供更加优化的CRF模型。替换ansj的默认模型。
-* 补充测试用例，n多地方测试不完全。如果你有兴趣可以帮忙啦！
-* 重构人名识别模型。增加机构名识别等模型。
-* 增加句法文法分析
-* 实现lstm的分词方式
-* 拾遗补漏...
+```text
+自然语言处理\tn\t1000
+```
 
+See the [upstream dictionary guide](https://github.com/NLPchina/ansj_seg/wiki/%E7%94%A8%E6%88%B7%E8%87%AA%E5%AE%9A%E4%B9%89%E8%AF%8D%E5%85%B8) and the [upstream documentation](https://github.com/NLPchina/ansj_seg/wiki) for dictionary and model formats. Check the resource's own license and provenance before distributing it with an application.
+
+## License
+
+Apache License 2.0. See [LICENSE.txt](LICENSE.txt) and [NOTICE.txt](NOTICE.txt).

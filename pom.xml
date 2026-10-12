@@ -6,20 +6,20 @@
 	<packaging>jar</packaging>
 	<name>ansj_seg</name>
 	<version>5.1.6</version>
-	<description>best java chinese word seg ! </description>
-	<url>https://github.com/NLPchina/ansj_seg</url>
+	<description>Java library for Chinese word segmentation and related text analysis.</description>
+	<url>https://github.com/Archerkattri/ansj_seg</url>
 	<licenses>
 		<license>
 			<name>The Apache Software License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
 
 	<scm>
-		<connection>scm:git:git@github.com:ansjsun/ansj_seg.git</connection>
-		<developerConnection>scm:git:git@github.com:ansjsun/ansj_seg.git</developerConnection>
-		<url>git@github.com:ansjsun/ansj_seg.git</url>
+		<connection>scm:git:https://github.com/Archerkattri/ansj_seg.git</connection>
+		<developerConnection>scm:git:https://github.com/Archerkattri/ansj_seg.git</developerConnection>
+		<url>https://github.com/Archerkattri/ansj_seg</url>
 	</scm>
 
 
@@ -33,6 +33,10 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<junit.version>4.13.2</junit.version>
 	</properties>
 
 	<dependencies>
@@ -47,7 +51,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.8.1</version>
+			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -57,37 +61,25 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>net.orfjackal.retrolambda</groupId>
-				<artifactId>retrolambda-maven-plugin</artifactId>
-				<version>2.0.6</version>
-				<executions>
-					<execution>
-						<phase>default</phase>
-						<goals>
-							<goal>process-main</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<target>1.6</target>
-					<defaultMethods>false</defaultMethods>
-					<fork>false</fork>
-				</configuration>
-			</plugin>
-
-			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
+				<version>3.16.0</version>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>${maven.compiler.source}</source>
+					<target>${maven.compiler.target}</target>
 					<encoding>UTF-8</encoding>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.6.0</version>
 			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
+				<version>3.4.0</version>
 				<executions>
 					<execution>
 						<id>attach-sources</id>
@@ -107,12 +99,12 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.10.3</version>
+				<version>3.12.0</version>
 				<configuration>
 					<charset>UTF-8</charset>
 					<encoding>UTF-8</encoding>
 					<docencoding>UTF-8</docencoding>
-					<additionalparam>-Xdoclint:none</additionalparam>
+					<doclint>none</doclint>
 				</configuration>
 				<executions>
 					<execution>
@@ -126,7 +118,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-gpg-plugin</artifactId>
-				<version>1.4</version>
+				<version>3.2.8</version>
 				<executions>
 					<execution>
 						<id>sign-artifacts</id>

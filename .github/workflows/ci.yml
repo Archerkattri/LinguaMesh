@@ -1,0 +1,42 @@
+name: Java CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  core:
+    name: Core tests (Java ${{ matrix.java }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        java: ['8', '21']
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+          cache: maven
+      - name: Test and package core
+        run: mvn -B -ntp -Dgpg.skip=true clean verify
+
+  lucene-9:
+    name: Lucene 9 adapter (Java 21)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Install the core artifact
+        run: mvn -B -ntp -Dgpg.skip=true install
+      - name: Test and package the Lucene adapter
+        run: mvn -B -ntp -Dgpg.skip=true -f plugin/ansj_lucene9_plugin/pom.xml clean verify

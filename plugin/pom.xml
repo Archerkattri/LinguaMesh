@@ -34,7 +34,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<seg_version>5.1.5</seg_version>
+		<seg_version>5.1.6</seg_version>
 	</properties>
 
 	<dependencies>
@@ -47,7 +47,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.8.1</version>
+			<version>4.13.2</version>
 			<scope>test</scope>
 		</dependency>
 

@@ -19,6 +19,7 @@ import org.nlpcn.commons.lang.util.logging.LogFactory;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -59,12 +60,24 @@ public class Counter {
         if (!file.isHidden() && file.exists() && file.canRead()) {
             try {
                 if (file.isDirectory()) {
-                    // TODO: 只遍历当前目录下的所有文件
-                    File[] files = file.listFiles();
-                    if (files != null) {
-                        for (File f : files) {
-                            if (f.isFile() && !f.isHidden() && f.exists() && f.canRead()) {
-                                visitFile(ai, hm, f, encoding, analysis, recognitions);
+                    Deque<File> directories = new ArrayDeque<File>();
+                    directories.push(file);
+                    while (!directories.isEmpty()) {
+                        File directory = directories.pop();
+                        File[] children = directory.listFiles();
+                        if (children == null) {
+                            continue;
+                        }
+                        for (File child : children) {
+                            if (child.isHidden() || !child.canRead()) {
+                                continue;
+                            }
+                            if (child.isDirectory()) {
+                                if (!Files.isSymbolicLink(child.toPath())) {
+                                    directories.push(child);
+                                }
+                            } else if (child.isFile() && child.exists()) {
+                                visitFile(ai, hm, child, encoding, analysis, recognitions);
                             }
                         }
                     }
