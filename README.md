@@ -1,65 +1,85 @@
-# Ansj Seg
+# LinguaMesh
 
-Ansj Seg is a Java library for Chinese word segmentation. It includes several analysis modes, term and entity recognition, custom dictionaries, keyword extraction, and text summarization.
+**Java text tokenization with selectable language engines.** LinguaMesh keeps the Ansj Chinese segmenter and adds a provider API so applications can choose an engine appropriate to their language, runtime, and use case.
 
-[![Java CI](https://github.com/Archerkattri/ansj_seg/actions/workflows/ci.yml/badge.svg)](https://github.com/Archerkattri/ansj_seg/actions/workflows/ci.yml)
+[![Java CI](https://github.com/Archerkattri/LinguaMesh/actions/workflows/ci.yml/badge.svg)](https://github.com/Archerkattri/LinguaMesh/actions/workflows/ci.yml)
 [![Apache-2.0 license](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE.txt)
 
-## About this repository
+This repository imports the history and code of [Ansj Seg](https://github.com/NLPchina/ansj_seg), an Apache-2.0 Chinese text-analysis library. Existing `org.ansj` APIs remain available. New LinguaMesh APIs and providers are maintained separately; this project is independent and is not an official NLPchina release.
 
-This repository is an English-maintained fork of [NLPchina/ansj_seg](https://github.com/NLPchina/ansj_seg). It retains the upstream Java package names and Maven coordinates, but this fork has not published a Maven release. Maven consumers should continue to use the upstream artifact until a release from this fork is available.
+## Providers
 
-The project keeps its Apache License 2.0 notice and upstream attribution. It is an independent fork and is not an official NLPchina release.
+| Provider | Coverage | Notes |
+|---|---|---|
+| `ansj` | Chinese | Existing dictionaries and analysis behavior; retains the `org.ansj` compatibility API. |
+| `icu4j` | Unicode word boundaries for locale-tagged text | General segmentation fallback, not a substitute for language-specific morphology. ICU supplies dictionary word breaking for Chinese, Japanese, Thai, Lao, Khmer, and Burmese. |
+| `lucene10` | Arabic, Chinese/Japanese/Korean, English, French, German, Hindi, Italian, Russian, Spanish, Thai; generic Unicode fallback for other tags | Uses Lucene language analyzers for the listed languages and `StandardAnalyzer` otherwise. Some analyzers normalize, remove stop words, or stem; offsets still refer to the input. Requires Java 21. |
 
-## Requirements
+Providers are optional Maven dependencies discovered with Java `ServiceLoader`. Tokens include UTF-16 offsets into the source and engine-specific attributes; token text may be normalized. Multiple engines can support the same language, so select the provider explicitly for predictable behavior.
 
-- Java 8 or newer for the core library.
-- Java 11 or newer for the Lucene 9 adapter in `plugin/ansj_lucene9_plugin`.
-- Maven 3.6.3 or newer.
+## Install
 
-## Build and test
+The current coordinates are development snapshots and are not published to Maven Central:
 
-Run the core test suite and create the library, sources, and Javadoc artifacts:
-
-```sh
-mvn -B -ntp -Dgpg.skip=true clean verify
+```xml
+<dependency>
+  <groupId>io.github.archerkattri</groupId>
+  <artifactId>linguamesh-core</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+</dependency>
 ```
 
-The Lucene 9 adapter is built separately after installing the core artifact locally:
+Add the Lucene 10 provider for language-specific search analysis:
 
-```sh
-mvn -B -ntp -Dgpg.skip=true install
-mvn -B -ntp -Dgpg.skip=true -f plugin/ansj_lucene9_plugin/pom.xml clean verify
+```xml
+<dependency>
+  <groupId>io.github.archerkattri</groupId>
+  <artifactId>linguamesh-provider-lucene10</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+</dependency>
 ```
 
-Other adapters under `plugin/` target older Lucene or Solr releases. They are retained for compatibility and are not covered by the current CI build.
+Add the ICU4J provider when Unicode boundary tokenization is needed:
 
-## Basic usage
+```xml
+<dependency>
+  <groupId>io.github.archerkattri</groupId>
+  <artifactId>linguamesh-provider-icu4j</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+</dependency>
+```
+
+## Use
 
 ```java
-import org.ansj.domain.Term;
-import org.ansj.splitWord.analysis.ToAnalysis;
+import io.linguamesh.api.TextToken;
+import io.linguamesh.api.TextTokenizer;
+import io.linguamesh.api.TextTokenizerRegistry;
 
-String text = "欢迎使用中文分词";
-for (Term term : ToAnalysis.parse(text)) {
-    System.out.println(term.getName() + "\t" + term.getNatureStr());
+TextTokenizerRegistry registry = TextTokenizerRegistry.discover();
+TextTokenizer tokenizer = registry.create("icu4j", "th");
+for (TextToken token : tokenizer.tokenize("ภาษาไทย")) {
+    System.out.println(token.getText() + " " + token.getStartOffset() + ":" + token.getEndOffset());
 }
 ```
 
-`ToAnalysis` is the general-purpose entry point. The library also provides `BaseAnalysis`, `IndexAnalysis`, `DicAnalysis`, and `NlpAnalysis`; choose an analyzer based on the segmentation behavior your application needs.
+For direct access to the original Ansj API, use `ToAnalysis.parse(text)` and the `org.ansj` classes as before. Token offsets are zero-based, end-exclusive UTF-16 indices into the input string. A provider may return normalized token text, so use offsets to locate the original text rather than assuming the token equals its source substring.
 
-## Dictionaries and models
+## Build and test
 
-The default dictionaries referenced by `ansj_library.properties` are included under `library/`. If you configure custom dictionaries or optional model files, make sure they are available at the paths you specify before parsing. Missing resources can cause initialization errors, especially in packaged or Android applications.
+Requires JDK 8 or newer and Maven 3.6.3 or newer.
 
-For a custom word dictionary, each line contains a word, part of speech, and frequency separated by tab characters:
-
-```text
-自然语言处理\tn\t1000
+```sh
+mvn -B -ntp clean verify
+mvn -B -ntp install
+mvn -B -ntp -f providers/icu4j/pom.xml clean verify
+mvn -B -ntp -f providers/lucene10/pom.xml clean verify
 ```
 
-See the [upstream dictionary guide](https://github.com/NLPchina/ansj_seg/wiki/%E7%94%A8%E6%88%B7%E8%87%AA%E5%AE%9A%E4%B9%89%E8%AF%8D%E5%85%B8) and the [upstream documentation](https://github.com/NLPchina/ansj_seg/wiki) for dictionary and model formats. Check the resource's own license and provenance before distributing it with an application.
+The core and ICU4J provider target Java 8. The Lucene 10 provider requires Java 21.
 
-## License
+The historical integrations under `plugin/` are retained from Ansj for reference and compatibility; the new provider API is the extension point for current integrations.
 
-Apache License 2.0. See [LICENSE.txt](LICENSE.txt) and [NOTICE.txt](NOTICE.txt).
+## Credit and license
+
+LinguaMesh retains the Ansj Seg Apache License 2.0 and notices. The imported source history retains its recorded authorship; new provider code is maintained in this repository. Third-party engines and language models keep their own licenses and notices. See [LICENSE.txt](LICENSE.txt) and [NOTICE.txt](NOTICE.txt).

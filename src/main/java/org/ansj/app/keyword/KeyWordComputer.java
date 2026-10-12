@@ -80,9 +80,6 @@ public class KeyWordComputer<T extends Analysis> {
                 parse.recognition(recognition);
             }
         }
-        //FIXME: 这个依赖于用户自定义词典的词性,所以得需要另一个方法..
-//		parse = FilterModifWord.updateNature(parse) ;
-
         for (Term term : parse) {
             double weight = getWeight(term, content.length(), titleLength);
             if (weight == 0) {

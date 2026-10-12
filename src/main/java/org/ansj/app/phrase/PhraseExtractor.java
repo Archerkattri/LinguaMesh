@@ -184,7 +184,7 @@ public class PhraseExtractor {
 
         List<Map.Entry<String, Occurrence>> entryList = new ArrayList<Map.Entry<String, Occurrence>>(occurrenceMap.entrySet());
 
-        // TODO: 如果短语量大, 去重会很慢
+        // Skip the pairwise substring check above the configured size threshold.
         if (occurrenceMap.size() < DEDUP_THRESHOLD) {
             dedup(entryList, toRemove);
             occurrenceMap.keySet().removeAll(toRemove);

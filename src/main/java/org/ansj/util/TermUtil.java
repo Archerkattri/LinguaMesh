@@ -137,9 +137,7 @@ public class TermUtil {
 	}
 
 	/**
-	 * 得到细颗粒度的分词，并且确定词性
-	 * 
-	 * @return 返回是null说明已经是最细颗粒度
+	 * Corrects the nature of a recognized foreign name.
 	 */
 	public static void parseNature(Term term) {
 		if (!Nature.NW.equals(term.natrue())) {
@@ -157,10 +155,6 @@ public class TermUtil {
 			term.setNature(NatureLibrary.getNature("nrf"));
 			return;
 		}
-
-		List<Term> subTerm = term.getSubTerm();
-
-		// TODO:判断是否是机构名
 
 	}
 

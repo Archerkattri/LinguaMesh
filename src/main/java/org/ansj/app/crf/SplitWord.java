@@ -123,8 +123,7 @@ public class SplitWord {
 
 		char[][] feautres = model.getConfig().makeFeatureArr(elements, index);
 
-		//TODO: set 20 很大吧!
-		float[] tagScore = new float[20]; //Config.TAG_NUM*Config.TAG_NUM+Config.TAG_NUM
+		float[] tagScore = new float[Config.TAG_NUM * Config.TAG_NUM + Config.TAG_NUM];
 
 		for (int i = 0; i < feautres.length; i++) {
 			MatrixUtil.dot(tagScore, model.getFeature(feautres[i]));

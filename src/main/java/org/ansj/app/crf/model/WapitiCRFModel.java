@@ -248,7 +248,7 @@ public class WapitiCRFModel extends Model {
 
 		String temp = br.readLine();// #qrk#4
 
-		// TODO: 这个是个写死的过程,如果标签发生改变需要重新来写这里
+		// Wapiti model files use the fixed S/B/M/E tag set.
 		for (int i = 0; i < Config.TAG_NUM; i++) {
 			char c = br.readLine().split(":")[1].charAt(0);
 			switch (c) {
@@ -270,7 +270,7 @@ public class WapitiCRFModel extends Model {
 		}
 
 		for (int i = Config.TAG_NUM; i < conver.length; i++) {
-			conver[i] = conver[(i - 4) / Config.TAG_NUM] * Config.TAG_NUM + conver[i % Config.TAG_NUM] + Config.TAG_NUM;
+			conver[i] = conver[(i - Config.TAG_NUM) / Config.TAG_NUM] * Config.TAG_NUM + conver[i % Config.TAG_NUM] + Config.TAG_NUM;
 		}
 
 		return conver;

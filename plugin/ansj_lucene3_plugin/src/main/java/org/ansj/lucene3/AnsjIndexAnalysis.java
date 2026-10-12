@@ -31,7 +31,6 @@ public class AnsjIndexAnalysis extends Analyzer {
 	}
 
 	public AnsjIndexAnalysis() {
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

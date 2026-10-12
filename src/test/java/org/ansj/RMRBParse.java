@@ -3,7 +3,7 @@ package org.ansj;
 import java.io.*;
 
 public class RMRBParse {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(
 				"train_file/corpus/rmrb.txt")));
 			 BufferedOutputStream fos = new BufferedOutputStream(new FileOutputStream(
@@ -22,10 +22,6 @@ public class RMRBParse {
 				fos.write("\n".getBytes());
 			}
 			fos.flush();
-			fos.close();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 
 	}

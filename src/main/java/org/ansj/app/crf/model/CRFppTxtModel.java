@@ -226,7 +226,7 @@ public class CRFppTxtModel extends Model {
 
 		String temp = null;
 
-		// TODO: 这个是个写死的过程,如果标签发生改变需要重新来写这里
+		// CRF++ model files use the fixed S/B/M/E tag set.
 		for (int i = 0; i < Config.TAG_NUM; i++) {
 			String line = br.readLine();
 			if (StringUtil.isBlank(line)) {
@@ -254,7 +254,7 @@ public class CRFppTxtModel extends Model {
 		}
 
 		for (int i = Config.TAG_NUM; i < conver.length; i++) {
-			conver[i] = conver[(i - 4) / Config.TAG_NUM] * Config.TAG_NUM + conver[i % Config.TAG_NUM] + Config.TAG_NUM;
+			conver[i] = conver[(i - Config.TAG_NUM) / Config.TAG_NUM] * Config.TAG_NUM + conver[i % Config.TAG_NUM] + Config.TAG_NUM;
 		}
 
 		return conver;

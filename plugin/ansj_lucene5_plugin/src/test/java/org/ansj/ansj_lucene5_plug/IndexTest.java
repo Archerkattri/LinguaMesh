@@ -157,10 +157,8 @@ public class IndexTest {
 			String highlighterStr = highlighter.getBestFragment(tokenStream1, doc.get(field));
 			return highlighterStr == null ? doc.get(field) : highlighterStr;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvalidTokenOffsetsException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;

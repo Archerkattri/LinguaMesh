@@ -28,7 +28,6 @@ public class Test {
 				System.out.println(attribute);
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
