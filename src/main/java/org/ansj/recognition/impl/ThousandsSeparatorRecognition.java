@@ -6,6 +6,7 @@ import org.ansj.domain.TermNature;
 import org.ansj.domain.TermNatures;
 import org.ansj.recognition.Recognition;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -50,23 +51,57 @@ public class ThousandsSeparatorRecognition implements Recognition {
             }
 
             StringBuilder value = new StringBuilder();
+            String firstName = first.getName();
+            List<Term> parts = new ArrayList<Term>();
+            List<Integer> prefixLengths = new ArrayList<Integer>();
             int cursor = i;
             Term previous = null;
             while (cursor < terms.size()) {
                 Term part = terms.get(cursor);
-                if (part.getOffe() < 0 || !isNumberPart(part.getName())
+                int prefixLength = numericPrefixLength(part.getName());
+                if (part.getOffe() < 0 || prefixLength == 0
                         || (previous != null && !areAdjacent(previous, part))) {
                     break;
                 }
-                value.append(part.getName());
+                parts.add(part);
+                prefixLengths.add(prefixLength);
+                value.append(part.getName(), 0, prefixLength);
                 previous = part;
                 cursor++;
+                if (prefixLength < part.getName().length()) {
+                    break;
+                }
             }
 
             if (groupedNumber.matcher(value).matches()) {
-                for (int part = i + 1; part < cursor; part++) {
-                    first.merage(terms.get(part));
-                    terms.get(part).setOffe(-1);
+                for (int part = 1; part < parts.size(); part++) {
+                    Term numberPart = parts.get(part);
+                    int prefixLength = prefixLengths.get(part);
+                    if (prefixLength == numberPart.getName().length()) {
+                        first.merage(numberPart);
+                        numberPart.setOffe(-1);
+                    } else {
+                        String suffix = numberPart.getName().substring(prefixLength);
+                        Term numericTerm = new Term(numberPart.getName().substring(0, prefixLength),
+                                numberPart.getOffe(), numberPart.termNatures());
+                        first.merage(numericTerm);
+                        int suffixOffset = numberPart.getOffe() + prefixLength;
+                        numberPart.setName(suffix);
+                        numberPart.setRealName(suffix);
+                        numberPart.setOffe(suffixOffset);
+                    }
+                }
+
+                int firstPrefixLength = prefixLengths.get(0);
+                if (firstPrefixLength < firstName.length()) {
+                    String suffix = firstName.substring(firstPrefixLength);
+                    int suffixOffset = first.getOffe() + firstPrefixLength;
+                    Term suffixTerm = new Term(suffix, suffixOffset, first.termNatures());
+                    suffixTerm.setRealName(suffix);
+                    first.setName(firstName.substring(0, firstPrefixLength));
+                    first.setRealName(first.getName());
+                    terms.add(cursor, suffixTerm);
+                    cursor++;
                 }
                 first.updateTermNaturesAndNature(THOUSANDS_NATURES);
             }
@@ -85,17 +120,19 @@ public class ThousandsSeparatorRecognition implements Recognition {
         groupedNumber = Pattern.compile(groupedInteger + "(?:\\.[0-9]+)?");
     }
 
-    private boolean isNumberPart(String value) {
+    private int numericPrefixLength(String value) {
         if (value == null || value.isEmpty()) {
-            return false;
+            return 0;
         }
-        for (int index = 0; index < value.length(); index++) {
+        int index = 0;
+        while (index < value.length()) {
             char character = value.charAt(index);
             if ((character < '0' || character > '9') && character != separator.charAt(0) && character != '.') {
-                return false;
+                break;
             }
+            index++;
         }
-        return true;
+        return index;
     }
 
     private static boolean startsWithDigit(String value) {

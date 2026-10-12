@@ -16,6 +16,7 @@ public class ThousandsSeparatorRecognitionTest {
         Result result = ToAnalysis.parse("访问量为10,234,567.89元").recognition(new ThousandsSeparatorRecognition());
 
         assertNature(result, "10,234,567.89", "thousands_separator");
+        assertNotNull("The unit should remain a separate term.", findTerm(result, "元"));
     }
 
     @Test
