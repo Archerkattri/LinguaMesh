@@ -42,6 +42,9 @@ jobs:
           for resource in ansj_library.properties library/default.dic library/ambiguity.dic library/synonyms.dic library/stop.dic; do
             jar tf target/linguamesh-core-1.0.0-SNAPSHOT.jar | grep -Fxq "$resource" || exit 1
           done
+          service=io.linguamesh.ansj.AnsjTokenizerProvider
+          jar tf target/linguamesh-core-1.0.0-SNAPSHOT.jar | grep -Fxc "META-INF/services/io.linguamesh.api.TextTokenizerProvider" >/dev/null
+          unzip -p target/linguamesh-core-1.0.0-SNAPSHOT.jar META-INF/services/io.linguamesh.api.TextTokenizerProvider | grep -Fxc "$service" | grep -Fxq 1
       - name: Validate Central publishing profile
         if: matrix.java == '21'
         run: mvn -B -ntp -Pcentral-publishing -Dgpg.skip=true -DskipTests validate
@@ -73,6 +76,7 @@ jobs:
               fi
             done
           done
+          unzip -p providers/icu4j/target/linguamesh-provider-icu4j-1.0.0-SNAPSHOT.jar META-INF/services/io.linguamesh.api.TextTokenizerProvider | grep -Fxc io.linguamesh.icu4j.Icu4jTokenizerProvider | grep -Fxq 1
       - name: Validate Central publishing profile
         run: mvn -B -ntp -Pcentral-publishing -Dgpg.skip=true -DskipTests -f providers/icu4j/pom.xml validate
 
@@ -103,6 +107,7 @@ jobs:
               fi
             done
           done
+          unzip -p providers/lucene10/target/linguamesh-provider-lucene10-1.0.0-SNAPSHOT.jar META-INF/services/io.linguamesh.api.TextTokenizerProvider | grep -Fxc io.linguamesh.lucene.Lucene10TokenizerProvider | grep -Fxq 1
       - name: Validate Central publishing profile
         run: mvn -B -ntp -Pcentral-publishing -Dgpg.skip=true -DskipTests -f providers/lucene10/pom.xml validate
 
@@ -133,6 +138,7 @@ jobs:
               fi
             done
           done
+          unzip -p providers/opennlp/target/linguamesh-provider-opennlp-1.0.0-SNAPSHOT.jar META-INF/services/io.linguamesh.api.TextTokenizerProvider | grep -Fxc io.linguamesh.opennlp.OpenNlpTokenizerProvider | grep -Fxq 1
       - name: Validate Central publishing profile
         run: mvn -B -ntp -Pcentral-publishing -Dgpg.skip=true -DskipTests -f providers/opennlp/pom.xml validate
 
@@ -177,5 +183,6 @@ jobs:
               fi
             done
           done
+          unzip -p providers/sudachi/target/linguamesh-provider-sudachi-1.0.0-SNAPSHOT.jar META-INF/services/io.linguamesh.api.TextTokenizerProvider | grep -Fxc io.linguamesh.sudachi.SudachiTokenizerProvider | grep -Fxq 1
       - name: Validate Central publishing profile
         run: mvn -B -ntp -Pcentral-publishing -Dgpg.skip=true -DskipTests -f providers/sudachi/pom.xml validate
