@@ -31,6 +31,8 @@ import org.apache.lucene.analysis.hu.HungarianAnalyzer;
 import org.apache.lucene.analysis.hy.ArmenianAnalyzer;
 import org.apache.lucene.analysis.id.IndonesianAnalyzer;
 import org.apache.lucene.analysis.it.ItalianAnalyzer;
+import org.apache.lucene.analysis.ja.JapaneseAnalyzer;
+import org.apache.lucene.analysis.ko.KoreanAnalyzer;
 import org.apache.lucene.analysis.lt.LithuanianAnalyzer;
 import org.apache.lucene.analysis.lv.LatvianAnalyzer;
 import org.apache.lucene.analysis.ne.NepaliAnalyzer;
@@ -178,6 +180,10 @@ public final class Lucene10TokenizerProvider implements TextTokenizerProvider {
                     return new IndonesianAnalyzer();
                 case "it":
                     return new ItalianAnalyzer();
+                case "ja":
+                    return new JapaneseAnalyzer();
+                case "ko":
+                    return new KoreanAnalyzer();
                 case "lt":
                     return new LithuanianAnalyzer();
                 case "lv":
@@ -208,8 +214,6 @@ public final class Lucene10TokenizerProvider implements TextTokenizerProvider {
                 case "tr":
                     return new TurkishAnalyzer();
                 case "zh":
-                case "ja":
-                case "ko":
                     return new CJKAnalyzer();
                 default:
                     return new StandardAnalyzer();

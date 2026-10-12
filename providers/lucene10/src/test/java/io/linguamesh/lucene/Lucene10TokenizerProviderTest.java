@@ -17,6 +17,8 @@ public class Lucene10TokenizerProviderTest {
     public void selectsLanguageSpecificAnalysisAndKeepsValidSourceOffsets() {
         assertTokenRanges("en", "The quick runners are running.");
         assertTokenRanges("zh", "自然语言处理支持中文分词");
+        assertTokenRanges("ja", "関西国際空港で働いています。");
+        assertTokenRanges("ko", "한국어 형태소 분석을 지원합니다.");
     }
 
     @Test
