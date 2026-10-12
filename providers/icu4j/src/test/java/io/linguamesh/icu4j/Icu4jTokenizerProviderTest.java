@@ -2,14 +2,21 @@ package io.linguamesh.icu4j;
 
 import io.linguamesh.api.TextToken;
 import io.linguamesh.api.TextTokenizer;
+import io.linguamesh.api.TextTokenizerRegistry;
 import org.junit.Test;
 
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class Icu4jTokenizerProviderTest {
+    @Test
+    public void registersWithServiceLoader() {
+        assertTrue(TextTokenizerRegistry.discover().getProviderIds().contains("icu4j"));
+    }
+
     @Test
     public void tokenOffsetsReferToOriginalTextForMixedScripts() {
         String text = "Café 中文ภาษาไทย مرحبا";

@@ -2,6 +2,7 @@ package io.linguamesh.opennlp;
 
 import io.linguamesh.api.TextToken;
 import io.linguamesh.api.TextTokenizer;
+import io.linguamesh.api.TextTokenizerRegistry;
 import opennlp.tools.tokenize.TokenizerModel;
 import org.junit.Test;
 
@@ -16,6 +17,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class OpenNlpTokenizerProviderTest {
+    @Test
+    public void registersWithServiceLoader() {
+        assertTrue(TextTokenizerRegistry.discover().getProviderIds().contains("opennlp"));
+    }
+
     @Test
     public void usesAnApplicationSuppliedModelAndPreservesSourceOffsets() throws IOException {
         TokenizerModel model;

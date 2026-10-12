@@ -2,6 +2,7 @@ package io.linguamesh.lucene;
 
 import io.linguamesh.api.TextToken;
 import io.linguamesh.api.TextTokenizer;
+import io.linguamesh.api.TextTokenizerRegistry;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -13,6 +14,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class Lucene10TokenizerProviderTest {
+    @Test
+    public void registersWithServiceLoader() {
+        assertTrue(TextTokenizerRegistry.discover().getProviderIds().contains("lucene10"));
+    }
+
     @Test
     public void selectsLanguageSpecificAnalysisAndKeepsValidSourceOffsets() {
         assertTokenRanges("en", "The quick runners are running.");
