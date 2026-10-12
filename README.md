@@ -125,3 +125,5 @@ mvn -Pcentral-publishing clean deploy
 ## Credit and license
 
 LinguaMesh retains the Ansj Seg Apache License 2.0 and notices. The imported source history retains its recorded authorship; new provider code is maintained in this repository. Third-party engines and language models keep their own licenses and notices. See [LICENSE.txt](LICENSE.txt) and [NOTICE.txt](NOTICE.txt).
+
+The upstream Ansj repository does not identify the source or redistribution terms for its bundled dictionaries and CRF model. Those asset-level rights have not been verified; the Maven artifacts remain unpublished until provenance is established or the unresolved assets are excluded from release artifacts.
