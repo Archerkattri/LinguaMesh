@@ -1,3 +1,5 @@
+/* Modified from the upstream Ansj Seg source by LinguaMesh maintainers in 2026. */
+
 package org.ansj.recognition.impl;
 
 import org.ansj.domain.Nature;
@@ -25,9 +27,13 @@ public class IPRecognition implements Recognition {
             }
 
             if (isValidAddress(term.getName())) {
-                if (!continuesAddress(terms, i + 1)) {
+                if (!continuesAddressBefore(terms, i) && !continuesAddress(terms, i + 1)) {
                     term.setNature(IP_NATURE);
                 }
+                continue;
+            }
+
+            if (continuesAddressBefore(terms, i)) {
                 continue;
             }
 
@@ -108,6 +114,11 @@ public class IPRecognition implements Recognition {
         return index > 0 && index < terms.size()
                 && areAdjacent(terms.get(index - 1), terms.get(index))
                 && terms.get(index).getName().startsWith(".");
+    }
+
+    private static boolean continuesAddressBefore(List<Term> terms, int index) {
+        return index > 0 && areAdjacent(terms.get(index - 1), terms.get(index))
+                && terms.get(index - 1).getName().endsWith(".");
     }
 
     private static boolean areAdjacent(Term left, Term right) {

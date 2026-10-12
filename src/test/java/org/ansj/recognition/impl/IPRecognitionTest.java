@@ -27,6 +27,15 @@ public class IPRecognitionTest {
         assertNull(findTerm(result, "192.168.01.1"));
     }
 
+    @Test
+    public void rejectsValidLookingSuffixesOfLongerDottedSequences() {
+        Result prefixed = ToAnalysis.parse("999.192.168.1.1").recognition(new IPRecognition());
+        Result suffixed = ToAnalysis.parse("192.168.1.1.999").recognition(new IPRecognition());
+
+        assertNull(findIp(prefixed, "192.168.1.1"));
+        assertNull(findIp(suffixed, "192.168.1.1"));
+    }
+
     private static void assertNature(Result result, String address) {
         Term term = findTerm(result, address);
         assertNotNull("Expected token: " + address, term);
@@ -40,5 +49,10 @@ public class IPRecognitionTest {
             }
         }
         return null;
+    }
+
+    private static Term findIp(Result result, String name) {
+        Term term = findTerm(result, name);
+        return term != null && "ip".equals(term.getNatureStr()) ? term : null;
     }
 }
