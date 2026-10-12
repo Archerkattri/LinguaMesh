@@ -15,7 +15,6 @@ public class ThousandsSeparatorRecognition implements Recognition {
 
     private static final long serialVersionUID = 1L;
     private static final TermNatures THOUSANDS_NATURES = new TermNatures(new TermNature("thousands_separator", 1));
-    private static final Pattern GROUP_SEGMENT = Pattern.compile("[0-9]{3}(?:[.][0-9]+)?");
 
     private String separator = ",";
     private Pattern groupedNumber;
@@ -33,8 +32,9 @@ public class ThousandsSeparatorRecognition implements Recognition {
     }
 
     public void setSeparator(String separator) {
-        if (separator == null || separator.length() != 1 || Character.isDigit(separator.charAt(0))) {
-            throw new IllegalArgumentException("The thousands separator must be one non-digit character.");
+        if (separator == null || separator.length() != 1 || Character.isDigit(separator.charAt(0))
+                || ".".equals(separator)) {
+            throw new IllegalArgumentException("The thousands separator must be one non-digit character other than a period.");
         }
         this.separator = separator;
         updatePattern();
@@ -45,58 +45,32 @@ public class ThousandsSeparatorRecognition implements Recognition {
         List<Term> terms = result.getTerms();
         for (int i = 0; i < terms.size(); i++) {
             Term first = terms.get(i);
-            if (first.getOffe() < 0) {
+            if (first.getOffe() < 0 || !startsWithDigit(first.getName()) || !isNumberPart(first.getName())) {
                 continue;
             }
 
-            if (groupedNumber.matcher(first.getName()).matches()) {
-                first.updateTermNaturesAndNature(THOUSANDS_NATURES);
-                continue;
-            }
-            if (!isDigits(first.getName()) || first.getName().length() > 3) {
-                continue;
-            }
-
+            StringBuilder value = new StringBuilder();
             int cursor = i;
-            int groups = 0;
-            boolean decimal = false;
-            while (cursor + 2 < terms.size()) {
-                Term separatorTerm = terms.get(cursor + 1);
-                if (!separator.equals(separatorTerm.getName())) {
+            Term previous = null;
+            while (cursor < terms.size()) {
+                Term part = terms.get(cursor);
+                if (part.getOffe() < 0 || !isNumberPart(part.getName())
+                        || (previous != null && !areAdjacent(previous, part))) {
                     break;
                 }
+                value.append(part.getName());
+                previous = part;
+                cursor++;
+            }
 
-                int groupStart = cursor + 2;
-                int groupEnd = groupStart;
-                String group = terms.get(groupStart).getName();
-                if (isDigits(group) && group.length() == 3
-                        && groupEnd + 2 < terms.size()
-                        && ".".equals(terms.get(groupEnd + 1).getName())
-                        && isDigits(terms.get(groupEnd + 2).getName())) {
-                    group += "." + terms.get(groupEnd + 2).getName();
-                    groupEnd += 2;
-                }
-                if (!GROUP_SEGMENT.matcher(group).matches()) {
-                    break;
-                }
-
-                first.merage(separatorTerm);
-                separatorTerm.setOffe(-1);
-                for (int part = groupStart; part <= groupEnd; part++) {
+            if (groupedNumber.matcher(value).matches()) {
+                for (int part = i + 1; part < cursor; part++) {
                     first.merage(terms.get(part));
                     terms.get(part).setOffe(-1);
                 }
                 first.updateTermNaturesAndNature(THOUSANDS_NATURES);
-                cursor = groupEnd;
-                groups++;
-                decimal = group.indexOf('.') >= 0;
-                if (decimal) {
-                    break;
-                }
             }
-            if (groups > 0) {
-                i = cursor;
-            }
+            i = cursor - 1;
         }
 
         for (Iterator<Term> iterator = terms.iterator(); iterator.hasNext();) {
@@ -111,7 +85,24 @@ public class ThousandsSeparatorRecognition implements Recognition {
         groupedNumber = Pattern.compile(groupedInteger + "(?:\\.[0-9]+)?");
     }
 
-    private static boolean isDigits(String value) {
-        return value != null && value.matches("[0-9]+");
+    private boolean isNumberPart(String value) {
+        if (value == null || value.isEmpty()) {
+            return false;
+        }
+        for (int index = 0; index < value.length(); index++) {
+            char character = value.charAt(index);
+            if ((character < '0' || character > '9') && character != separator.charAt(0) && character != '.') {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean startsWithDigit(String value) {
+        return value != null && !value.isEmpty() && value.charAt(0) >= '0' && value.charAt(0) <= '9';
+    }
+
+    private static boolean areAdjacent(Term left, Term right) {
+        return left.getOffe() + left.getName().length() == right.getOffe();
     }
 }

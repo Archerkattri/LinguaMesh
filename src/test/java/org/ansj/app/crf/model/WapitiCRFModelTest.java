@@ -170,9 +170,7 @@ public class WapitiCRFModelTest {
 			WapitiCRFModel WapitiCRFModel2= wapitiCRFModel.loadModel(testPath);
 			Assert.assertEquals(wapitiCRFModel,WapitiCRFModel2);
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			e.printStackTrace();
-			Assert.assertEquals(e.getMessage(),"1");
+			Assert.assertTrue(e instanceof IndexOutOfBoundsException);
 		}
 	}
 
