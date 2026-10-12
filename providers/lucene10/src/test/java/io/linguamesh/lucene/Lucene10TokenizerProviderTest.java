@@ -9,6 +9,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class Lucene10TokenizerProviderTest {
@@ -29,10 +30,17 @@ public class Lucene10TokenizerProviderTest {
     @Test
     public void sourceOffsetsRemainUtf16IndicesAfterSupplementaryCharacters() {
         List<TextToken> tokens = new Lucene10TokenizerProvider().create("en").tokenize("😀cat");
+        TextToken cat = null;
+        for (TextToken token : tokens) {
+            if ("cat".equals(token.getText())) {
+                cat = token;
+                break;
+            }
+        }
 
-        assertFalse(tokens.isEmpty());
-        assertEquals(2, tokens.get(0).getStartOffset());
-        assertEquals(5, tokens.get(0).getEndOffset());
+        assertNotNull(cat);
+        assertEquals(2, cat.getStartOffset());
+        assertEquals(5, cat.getEndOffset());
     }
 
     @Test

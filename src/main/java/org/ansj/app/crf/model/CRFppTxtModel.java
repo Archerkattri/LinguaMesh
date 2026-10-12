@@ -1,3 +1,5 @@
+/* Modified from the upstream Ansj Seg source by LinguaMesh maintainers in 2026. */
+
 package org.ansj.app.crf.model;
 
 import org.ansj.app.crf.Config;

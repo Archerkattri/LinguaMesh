@@ -1,3 +1,5 @@
+/* Modified from the upstream Ansj Seg source by LinguaMesh maintainers in 2026. */
+
 package org.ansj.lucene3;
 
 import org.ansj.lucene.util.AnsjTokenizer;

@@ -81,6 +81,14 @@
 					<include>**/*.dic</include>
 				</includes>
 			</resource>
+			<resource>
+				<directory>${project.basedir}</directory>
+				<targetPath>META-INF</targetPath>
+				<includes>
+					<include>LICENSE.txt</include>
+					<include>NOTICE.txt</include>
+				</includes>
+			</resource>
 		</resources>
 		<plugins>
 			<plugin>
