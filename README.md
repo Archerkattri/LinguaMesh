@@ -76,7 +76,7 @@ mvn -B -ntp -f providers/icu4j/pom.xml clean verify
 mvn -B -ntp -f providers/lucene10/pom.xml clean verify
 ```
 
-The core and ICU4J provider target Java 8. The Lucene 10 provider requires Java 21.
+The core targets Java 8. ICU4J 78.3 requires Java 11, and the Lucene 10 provider requires Java 21.
 
 The historical integrations under `plugin/` are retained from Ansj for reference and compatibility; the new provider API is the extension point for current integrations.
 
