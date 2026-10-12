@@ -26,4 +26,16 @@ public class Icu4jTokenizerProviderTest {
     public void emptyTextReturnsNoTokens() {
         assertEquals(0, new Icu4jTokenizerProvider().create("en").tokenize("").size());
     }
+
+    @Test
+    public void sourceOffsetsRemainUtf16IndicesAfterSupplementaryCharacters() {
+        String text = "😀 Café 中文";
+        List<TextToken> tokens = new Icu4jTokenizerProvider().create("en").tokenize(text);
+
+        assertFalse(tokens.isEmpty());
+        for (TextToken token : tokens) {
+            assertEquals(token.getText(), text.substring(token.getStartOffset(), token.getEndOffset()));
+        }
+        assertEquals(3, tokens.get(0).getStartOffset());
+    }
 }

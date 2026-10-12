@@ -7,6 +7,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -23,6 +24,15 @@ public class Lucene10TokenizerProviderTest {
         List<TextToken> tokens = tokenizer.tokenize("ሰላም ዓለም");
         assertFalse(tokens.isEmpty());
         assertTrue(tokens.get(0).getStartOffset() >= 0);
+    }
+
+    @Test
+    public void sourceOffsetsRemainUtf16IndicesAfterSupplementaryCharacters() {
+        List<TextToken> tokens = new Lucene10TokenizerProvider().create("en").tokenize("😀cat");
+
+        assertFalse(tokens.isEmpty());
+        assertEquals(2, tokens.get(0).getStartOffset());
+        assertEquals(5, tokens.get(0).getEndOffset());
     }
 
     @Test

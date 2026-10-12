@@ -13,6 +13,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class OpenNlpTokenizerProviderTest {
     @Test
@@ -25,12 +26,15 @@ public class OpenNlpTokenizerProviderTest {
         }
         TextTokenizer tokenizer = new OpenNlpTokenizerProvider(Collections.singletonMap("en", model))
                 .create("en-US");
-        String text = "OpenNLP tokenizes text while preserving source spans.";
+        String text = "😀 OpenNLP tokenizes text while preserving source spans.";
         List<TextToken> tokens = tokenizer.tokenize(text);
 
         assertFalse(tokens.isEmpty());
+        boolean foundTokenAfterSupplementaryCharacter = false;
         for (TextToken token : tokens) {
             assertEquals(token.getText(), text.substring(token.getStartOffset(), token.getEndOffset()));
+            foundTokenAfterSupplementaryCharacter |= token.getStartOffset() >= 3;
         }
+        assertTrue(foundTokenAfterSupplementaryCharacter);
     }
 }
