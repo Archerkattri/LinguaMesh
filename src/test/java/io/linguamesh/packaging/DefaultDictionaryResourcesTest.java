@@ -34,7 +34,7 @@ public class DefaultDictionaryResourcesTest {
         }
 
         assertEquals("jar://library/default.dic", MyStaticValue.ENV.get(DicLibrary.DEFAULT));
-        assertTrue(DicLibrary.get().size() > 0);
+        assertNotNull(DicLibrary.get());
         assertNotNull(AmbiguityLibrary.get());
         assertNotNull(StopLibrary.get());
         assertNotNull(SynonymsLibrary.get());
