@@ -44,7 +44,7 @@ public class ThousandsSeparatorRecognitionTest {
 
     private static void assertNature(Result result, String name, String nature) {
         Term term = findTerm(result, name);
-        assertNotNull("Expected token: " + name, term);
+        assertNotNull("Expected token: " + name + " in " + result, term);
         assertEquals(nature, term.getNatureStr());
     }
 
