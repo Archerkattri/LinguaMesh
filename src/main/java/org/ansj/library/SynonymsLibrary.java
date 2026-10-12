@@ -27,7 +27,7 @@ public class SynonymsLibrary {
 				put(entry.getKey(), entry.getValue());
 			}
 		}
-		putIfAbsent(DEFAULT, "library/synonyms.dic");
+		putIfAbsent(DEFAULT, "jar://library/synonyms.dic");
 	}
 
 	public static SmartForest<List<String>> get() {

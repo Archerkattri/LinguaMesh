@@ -31,7 +31,7 @@ public class StopLibrary {
 				put(entry.getKey(), entry.getValue());
 			}
 		}
-		putIfAbsent(DEFAULT, "library/stop.dic");
+		putIfAbsent(DEFAULT, "jar://library/stop.dic");
 	}
 
 	/**

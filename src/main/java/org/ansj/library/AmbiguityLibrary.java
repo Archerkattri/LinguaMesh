@@ -32,7 +32,7 @@ public class AmbiguityLibrary {
 				put(entry.getKey(), entry.getValue());
 			}
 		}
-		putIfAbsent(DEFAULT, "library/ambiguity.dic");
+		putIfAbsent(DEFAULT, "jar://library/ambiguity.dic");
 	}
 
 	/**

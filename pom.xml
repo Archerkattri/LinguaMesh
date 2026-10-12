@@ -64,6 +64,24 @@
 	</dependencies>
 
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+			<resource>
+				<directory>${project.basedir}</directory>
+				<includes>
+					<include>ansj_library.properties</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>${project.basedir}/library</directory>
+				<targetPath>library</targetPath>
+				<includes>
+					<include>**/*.dic</include>
+				</includes>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

@@ -25,6 +25,12 @@ jobs:
           cache: maven
       - name: Test and package core
         run: mvn -B -ntp -Dgpg.skip=true clean verify
+      - name: Verify dictionary resources in the core JAR
+        shell: bash
+        run: |
+          for resource in ansj_library.properties library/default.dic library/ambiguity.dic library/synonyms.dic library/stop.dic; do
+            jar tf target/linguamesh-core-1.0.0-SNAPSHOT.jar | grep -Fxq "$resource" || exit 1
+          done
       - name: Validate Central publishing profile
         if: matrix.java == '21'
         run: mvn -B -ntp -Pcentral-publishing -Dgpg.skip=true -DskipTests validate

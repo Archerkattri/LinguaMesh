@@ -39,7 +39,7 @@ public class DicLibrary {
 				put(entry.getKey(), entry.getValue());
 			}
 		}
-		putIfAbsent(DEFAULT, "library/default.dic");
+		putIfAbsent(DEFAULT, "jar://library/default.dic");
 
 		Forest forest = get();
 		if (forest == null) {

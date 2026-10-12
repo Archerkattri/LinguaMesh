@@ -96,6 +96,8 @@ for (TextToken token : tokenizer.tokenize("ภาษาไทย")) {
 
 For direct access to the original Ansj API, use `ToAnalysis.parse(text)` and the `org.ansj` classes as before. Token offsets are zero-based, end-exclusive UTF-16 indices into the input string. A provider may return normalized token text, so use offsets to locate the original text rather than assuming the token equals its source substring.
 
+The core JAR includes the default Ansj configuration and dictionaries. Applications do not need to copy the repository's `library/` directory into their working directory; custom dictionary paths remain application-managed.
+
 ## Build and test
 
 Requires JDK 8 or newer and Maven 3.6.3 or newer.
