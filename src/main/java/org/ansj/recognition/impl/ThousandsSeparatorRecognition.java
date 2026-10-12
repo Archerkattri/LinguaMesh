@@ -46,7 +46,8 @@ public class ThousandsSeparatorRecognition implements Recognition {
         List<Term> terms = result.getTerms();
         for (int i = 0; i < terms.size(); i++) {
             Term first = terms.get(i);
-            if (first.getOffe() < 0 || !startsWithDigit(first.getName()) || !isNumberPart(first.getName())) {
+            if (first.getOffe() < 0 || !startsWithDigit(first.getName())
+                    || numericPrefixLength(first.getName()) == 0) {
                 continue;
             }
 

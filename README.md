@@ -7,7 +7,7 @@ Ansj Seg is a Java library for Chinese word segmentation. It includes several an
 
 ## About this repository
 
-This repository is an English-maintained fork of [NLPchina/ansj_seg](https://github.com/NLPchina/ansj_seg). It retains the upstream Java packages and Maven coordinates for source compatibility. This fork has not published a Maven release; the dependency below refers to the upstream artifact.
+This repository is an English-maintained fork of [NLPchina/ansj_seg](https://github.com/NLPchina/ansj_seg). It retains the upstream Java package names and Maven coordinates, but this fork has not published a Maven release. Maven consumers should continue to use the upstream artifact until a release from this fork is available.
 
 The project keeps its Apache License 2.0 notice and upstream attribution. It is an independent fork and is not an official NLPchina release.
 
@@ -50,7 +50,7 @@ for (Term term : ToAnalysis.parse(text)) {
 
 ## Dictionaries and models
 
-Dictionary and model files are not included in this repository. The tracked `ansj_library.properties` points to local files under `library/`, which is intentionally excluded from version control. Supply the files required by the analyzer and recognition features you use, and configure their paths before parsing. Missing files can cause dictionary initialization errors, especially in packaged or Android applications.
+The default dictionaries referenced by `ansj_library.properties` are included under `library/`. If you configure custom dictionaries or optional model files, make sure they are available at the paths you specify before parsing. Missing resources can cause initialization errors, especially in packaged or Android applications.
 
 For a custom word dictionary, each line contains a word, part of speech, and frequency separated by tab characters:
 
