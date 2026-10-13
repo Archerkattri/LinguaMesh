@@ -127,20 +127,20 @@ For direct access to the original Ansj API, use `ToAnalysis.parse(text)` and the
 
 The core JAR includes the default Ansj configuration and dictionaries. Applications do not need to copy the repository's `library/` directory into their working directory; custom dictionary paths remain application-managed.
 
-## Build and test
+## Build and integration checks
 
 Requires JDK 8 or newer and Maven 3.6.3 or newer.
 
 ```sh
 mvn -B -ntp clean verify
-mvn -B -ntp install
+mvn -B -ntp -Dmaven.test.skip=true install
 mvn -B -ntp -f providers/icu4j/pom.xml clean verify
 mvn -B -ntp -f providers/lucene10/pom.xml clean verify
 mvn -B -ntp -f providers/opennlp/pom.xml clean verify
 mvn -B -ntp -f providers/sudachi/pom.xml clean verify
 ```
 
-The Sudachi integration tests use `SUDACHI_DICTIONARY_PATH` when set; CI downloads a checksum-pinned V1 test dictionary and does not package it. The core and Sudachi provider target Java 8. ICU4J 78.3 requires Java 11, OpenNLP 2.5.12 requires Java 17, and the Lucene 10 provider requires Java 21.
+The legacy unit-test suites have been removed. Provider and packaging integration checks remain. Sudachi checks require `SUDACHI_DICTIONARY_PATH`; CI downloads a checksum-pinned dictionary fixture that is not included in the artifact. The core and Sudachi provider target Java 8. ICU4J 78.3 requires Java 11, OpenNLP 2.5.12 requires Java 17, and Lucene 10 requires Java 21.
 
 The historical integrations under `plugin/` are retained from Ansj for reference and compatibility; the new provider API is the extension point for current integrations.
 
@@ -149,7 +149,7 @@ The historical integrations under `plugin/` are retained from Ansj for reference
 The `central-publishing` profile prepares signed artifacts and uploads them to the Central Portal for validation; it leaves the final publish action manual. A release requires a non-snapshot version, a verified `io.github.archerkattri` namespace, a GPG signing key, and a `central` user-token entry in the developer's Maven `settings.xml`. Never commit those credentials. The current version is a development snapshot and has not been published.
 
 ```sh
-mvn -Pcentral-publishing clean deploy
+mvn -Dmaven.test.skip=true -Pcentral-publishing clean deploy
 ```
 
 ## Credit and license
