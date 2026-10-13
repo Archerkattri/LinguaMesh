@@ -16,6 +16,7 @@ import java.util.List;
  * 生成crf 或者是 wapiti的训练语聊工具.
  * 
  * 执行:java org.ansj.app.crf.MakeTrainFile [inputPath] [outputPath]
+ * Paths are used as supplied; do not pass paths derived from untrusted input.
  * 
  * @author Ansj
  *

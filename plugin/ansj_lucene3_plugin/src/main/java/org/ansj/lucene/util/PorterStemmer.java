@@ -581,6 +581,7 @@ public class PorterStemmer {
 	/**
 	 * Test program for demonstrating the Stemmer. It reads a file and stems
 	 * each word, writing the result to standard out. Usage: Stemmer file-name
+	 * Arguments must name files the invoking user is authorized to read.
 	 */
 	public static void main(String[] args) {
 		PorterStemmer s = new PorterStemmer();
