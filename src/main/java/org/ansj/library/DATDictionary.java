@@ -6,7 +6,6 @@ import org.ansj.domain.NumNatureAttr;
 import org.ansj.domain.PersonNatureAttr;
 import org.ansj.domain.Term;
 import org.ansj.recognition.arrimpl.NumRecognition;
-import org.ansj.util.AllowlistedObjectInputStream;
 import org.ansj.util.MyStaticValue;
 import org.nlpcn.commons.lang.dat.DoubleArrayTire;
 import org.nlpcn.commons.lang.dat.Item;
@@ -14,8 +13,8 @@ import org.nlpcn.commons.lang.util.ObjConver;
 import org.nlpcn.commons.lang.util.logging.Log;
 import org.nlpcn.commons.lang.util.logging.LogFactory;
 
-import java.io.*;
-import java.util.Arrays;
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -34,21 +33,6 @@ public class DATDictionary {
 	 * 外国人名补充
 	 */
 	private static final Set<String> FOREIGNSET = new HashSet<>();
-	private static final Set<String> DICTIONARY_CLASSES = new HashSet<>(Arrays.asList(
-			"[Lorg.nlpcn.commons.lang.dat.Item;",
-			"org.nlpcn.commons.lang.dat.Item",
-			"org.ansj.domain.AnsjItem",
-			"org.ansj.domain.TermNatures",
-			"[Lorg.ansj.domain.TermNature;",
-			"org.ansj.domain.TermNature",
-			"org.ansj.domain.Nature",
-			"org.ansj.domain.NumNatureAttr",
-			"org.ansj.domain.PersonNatureAttr",
-			"java.util.HashMap",
-			"java.util.HashSet",
-			"java.lang.String",
-			"java.lang.Integer",
-			"java.lang.Number"));
 
 
 	/**
@@ -254,29 +238,21 @@ public class DATDictionary {
 	}
 
 
+	/**
+	 * @deprecated Serialized dictionary caches are unsupported. Load the source dictionary files instead.
+	 */
+	@Deprecated
 	public static void write2File(String path) throws IOException {
-		ObjectOutput oop = new ObjectOutputStream(new FileOutputStream(new File(path)));
-
-		oop.writeObject(DAT.getDAT());
-
-		oop.writeObject(PERSONMAP);
-
-		oop.writeObject(FOREIGNSET);
-
-		oop.flush();
-
-		oop.close();
+		throw new IOException("Serialized dictionary caches are unsupported. Load the source dictionary files instead.");
 	}
 
 
+	/**
+	 * @deprecated Serialized dictionary caches are unsupported. Load the source dictionary files instead.
+	 */
+	@Deprecated
 	public static DoubleArrayTire loadFromFile(String path) throws IOException, ClassNotFoundException {
-		try (ObjectInputStream ois = new AllowlistedObjectInputStream(new FileInputStream(path), DICTIONARY_CLASSES)) {
-			Item[] items = (Item[]) ois.readObject();
-			DoubleArrayTire dat = new DoubleArrayTire(items);
-			PERSONMAP.putAll((Map<String, PersonNatureAttr>) ois.readObject());
-			FOREIGNSET.addAll((Set<String>) ois.readObject());
-			return dat;
-		}
+		throw new IOException("Serialized dictionary caches are unsupported. Load the source dictionary files instead.");
 	}
 
 

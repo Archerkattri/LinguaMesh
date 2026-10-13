@@ -136,7 +136,7 @@ public class PersonNatureAttr implements Serializable {
 				U = value;
 				break;
 			case 'V':
-				U = value;
+				V = value;
 				break;
 			default:
 				throw new LibraryException("person name status err " + c);
