@@ -2,10 +2,10 @@
 
 ## Supported versions
 
-LinguaMesh has not published a stable release. Security fixes are made on `master`; no versioned releases are currently supported.
+LinguaMesh does not currently maintain versioned releases or a long-term support matrix. The `master` branch is the maintained source; historical commits and branches are not guaranteed to receive security fixes.
 
 ## Reporting a vulnerability
 
-Use GitHub's private vulnerability reporting for this repository. Include the affected component and version, the conditions needed to reproduce the issue, and its security impact. Do not report vulnerabilities in public issues or disclose them publicly before coordinating a fix.
+Please report vulnerabilities privately through the repository's **Security → Advisories → Report a vulnerability** flow. Do not post exploit details in public issues or pull requests.
 
-The maintainers will acknowledge reports and coordinate next steps through the private advisory. Response times depend on severity and maintainer availability; no fixed service-level commitment is offered.
+Reports are reviewed as maintainer capacity allows; there is no guaranteed response-time service level. If private reporting is unavailable, open an issue asking for a private contact channel without including technical details.
