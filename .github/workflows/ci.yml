@@ -23,7 +23,7 @@ jobs:
           distribution: temurin
           java-version: ${{ matrix.java }}
           cache: maven
-      - name: Test and package core
+      - name: Build, package, and check core integrations
         run: mvn -B -ntp -Dgpg.skip=true clean verify
       - name: Verify dictionary resources in the core JAR
         shell: bash
@@ -59,9 +59,9 @@ jobs:
           distribution: temurin
           java-version: '11'
           cache: maven
-      - name: Install the core and run its tests
-        run: mvn -B -ntp -Dgpg.skip=true install
-      - name: Test and package the ICU4J provider
+      - name: Install the core artifact
+        run: mvn -B -ntp -Dmaven.test.skip=true -Dgpg.skip=true install
+      - name: Build, package, and check the ICU4J provider
         run: mvn -B -ntp -f providers/icu4j/pom.xml clean verify
       - name: Verify license and notice in the provider JAR
         run: |
@@ -90,9 +90,9 @@ jobs:
           distribution: temurin
           java-version: '21'
           cache: maven
-      - name: Install the core and run its tests
-        run: mvn -B -ntp -Dgpg.skip=true install
-      - name: Test and package the Lucene 10 provider
+      - name: Install the core artifact
+        run: mvn -B -ntp -Dmaven.test.skip=true -Dgpg.skip=true install
+      - name: Build, package, and check the Lucene 10 provider
         run: mvn -B -ntp -f providers/lucene10/pom.xml clean verify
       - name: Verify license and notice in the provider JAR
         run: |
@@ -121,9 +121,9 @@ jobs:
           distribution: temurin
           java-version: '17'
           cache: maven
-      - name: Install the core and run its tests
-        run: mvn -B -ntp -Dgpg.skip=true install
-      - name: Test and package the OpenNLP provider
+      - name: Install the core artifact
+        run: mvn -B -ntp -Dmaven.test.skip=true -Dgpg.skip=true install
+      - name: Build, package, and check the OpenNLP provider
         run: mvn -B -ntp -f providers/opennlp/pom.xml clean verify
       - name: Verify license and notice in the provider JAR
         run: |
@@ -165,9 +165,9 @@ jobs:
           dictionary=$(find "$directory" -type f -name system_core.dic -print -quit)
           test -n "$dictionary"
           echo "SUDACHI_DICTIONARY_PATH=$dictionary" >> "$GITHUB_ENV"
-      - name: Install the core and run its tests
-        run: mvn -B -ntp -Dgpg.skip=true install
-      - name: Test and package the Sudachi provider
+      - name: Install the core artifact
+        run: mvn -B -ntp -Dmaven.test.skip=true -Dgpg.skip=true install
+      - name: Build, package, and check the Sudachi provider
         run: mvn -B -ntp -f providers/sudachi/pom.xml clean verify
       - name: Verify license and notice in the provider JAR
         shell: bash
