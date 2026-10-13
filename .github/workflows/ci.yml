@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   core:
-    name: Core package build (Java ${{ matrix.java }})
+    name: Core tests (Java ${{ matrix.java }})
     runs-on: ubuntu-26.04
     strategy:
       fail-fast: false
