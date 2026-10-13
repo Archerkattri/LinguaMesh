@@ -6,6 +6,7 @@ import org.ansj.domain.NumNatureAttr;
 import org.ansj.domain.PersonNatureAttr;
 import org.ansj.domain.Term;
 import org.ansj.recognition.arrimpl.NumRecognition;
+import org.ansj.util.AllowlistedObjectInputStream;
 import org.ansj.util.MyStaticValue;
 import org.nlpcn.commons.lang.dat.DoubleArrayTire;
 import org.nlpcn.commons.lang.dat.Item;
@@ -14,6 +15,7 @@ import org.nlpcn.commons.lang.util.logging.Log;
 import org.nlpcn.commons.lang.util.logging.LogFactory;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -32,6 +34,21 @@ public class DATDictionary {
 	 * 外国人名补充
 	 */
 	private static final Set<String> FOREIGNSET = new HashSet<>();
+	private static final Set<String> DICTIONARY_CLASSES = new HashSet<>(Arrays.asList(
+			"[Lorg.nlpcn.commons.lang.dat.Item;",
+			"org.nlpcn.commons.lang.dat.Item",
+			"org.ansj.domain.AnsjItem",
+			"org.ansj.domain.TermNatures",
+			"[Lorg.ansj.domain.TermNature;",
+			"org.ansj.domain.TermNature",
+			"org.ansj.domain.Nature",
+			"org.ansj.domain.NumNatureAttr",
+			"org.ansj.domain.PersonNatureAttr",
+			"java.util.HashMap",
+			"java.util.HashSet",
+			"java.lang.String",
+			"java.lang.Integer",
+			"java.lang.Number"));
 
 
 	/**
@@ -253,18 +270,13 @@ public class DATDictionary {
 
 
 	public static DoubleArrayTire loadFromFile(String path) throws IOException, ClassNotFoundException {
-		ObjectInputStream ois = new ObjectInputStream(new FileInputStream(new File(path)));
-
-		Item[] items = (Item[]) ois.readObject();
-
-		DoubleArrayTire dat = new DoubleArrayTire(items);
-
-
-		PERSONMAP.putAll(((Map<String, PersonNatureAttr>) ois.readObject()));
-
-		FOREIGNSET.addAll(((Set<String>) ois.readObject()));
-
-		return dat;
+		try (ObjectInputStream ois = new AllowlistedObjectInputStream(new FileInputStream(path), DICTIONARY_CLASSES)) {
+			Item[] items = (Item[]) ois.readObject();
+			DoubleArrayTire dat = new DoubleArrayTire(items);
+			PERSONMAP.putAll((Map<String, PersonNatureAttr>) ois.readObject());
+			FOREIGNSET.addAll((Set<String>) ois.readObject());
+			return dat;
+		}
 	}
 
 
