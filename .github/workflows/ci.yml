@@ -45,9 +45,35 @@ jobs:
           service=io.linguamesh.ansj.AnsjTokenizerProvider
           jar tf target/linguamesh-core-1.0.0-SNAPSHOT.jar | grep -Fxc "META-INF/services/io.linguamesh.api.TextTokenizerProvider" >/dev/null
           unzip -p target/linguamesh-core-1.0.0-SNAPSHOT.jar META-INF/services/io.linguamesh.api.TextTokenizerProvider | grep -Fxc "$service" | grep -Fxq 1
+
+  api-artifact:
+    name: Clean API release artifact (Java 8)
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '8'
+          cache: maven
+      - name: Build and validate the release API
+        run: mvn -B -ntp -f api/pom.xml -Dgpg.skip=true clean verify
+      - name: Confirm the API artifacts contain no inherited engines or language data
+        shell: bash
+        run: |
+          for archive in api/target/linguamesh-api-1.0.0.jar api/target/linguamesh-api-1.0.0-sources.jar api/target/linguamesh-api-1.0.0-javadoc.jar; do
+            test -f "$archive"
+            listing=$(jar tf "$archive")
+            grep -Fxq META-INF/LICENSE.txt <<< "$listing"
+            grep -Fxq META-INF/NOTICE.txt <<< "$listing"
+            if grep -Eiq '(^|/)(org/ansj|library/|nature/|person/|.*\.dic$|.*\.model$)|META-INF/services/' <<< "$listing"; then
+              echo "Unexpected engine, language data, or provider registration in $archive"
+              exit 1
+            fi
+          done
+          test "$(jar tf api/target/linguamesh-api-1.0.0.jar | grep -Ec '^io/linguamesh/api/[^/]+\.class$')" -eq 4
       - name: Validate Central publishing profile
-        if: matrix.java == '21'
-        run: mvn -B -ntp -Pcentral-publishing -Dgpg.skip=true -DskipTests validate
+        run: mvn -B -ntp -f api/pom.xml -Pcentral-publishing -Dgpg.skip=true -DskipTests validate
 
   icu4j-provider:
     name: ICU4J provider (Java 11)
@@ -59,14 +85,14 @@ jobs:
           distribution: temurin
           java-version: '11'
           cache: maven
-      - name: Install the core artifact
-        run: mvn -B -ntp -Dmaven.test.skip=true -Dgpg.skip=true install
+      - name: Install the release API
+        run: mvn -B -ntp -f api/pom.xml -Dgpg.skip=true install
       - name: Build, package, and check the ICU4J provider
         run: mvn -B -ntp -f providers/icu4j/pom.xml clean verify
       - name: Verify license and notice in the provider JAR
         run: |
-          test -f providers/icu4j/target/linguamesh-provider-icu4j-1.0.0-SNAPSHOT-javadoc.jar
-          for archive in providers/icu4j/target/linguamesh-provider-icu4j-1.0.0-SNAPSHOT.jar providers/icu4j/target/linguamesh-provider-icu4j-1.0.0-SNAPSHOT-sources.jar; do
+          test -f providers/icu4j/target/linguamesh-provider-icu4j-1.0.0-javadoc.jar
+          for archive in providers/icu4j/target/linguamesh-provider-icu4j-1.0.0.jar providers/icu4j/target/linguamesh-provider-icu4j-1.0.0-sources.jar; do
             test -f "$archive"
             for resource in META-INF/LICENSE.txt META-INF/NOTICE.txt; do
               count=$(jar tf "$archive" | grep -Fxc "$resource" || true)
@@ -76,7 +102,7 @@ jobs:
               fi
             done
           done
-          unzip -p providers/icu4j/target/linguamesh-provider-icu4j-1.0.0-SNAPSHOT.jar META-INF/services/io.linguamesh.api.TextTokenizerProvider | grep -Fxc io.linguamesh.icu4j.Icu4jTokenizerProvider | grep -Fxq 1
+          unzip -p providers/icu4j/target/linguamesh-provider-icu4j-1.0.0.jar META-INF/services/io.linguamesh.api.TextTokenizerProvider | grep -Fxc io.linguamesh.icu4j.Icu4jTokenizerProvider | grep -Fxq 1
       - name: Validate Central publishing profile
         run: mvn -B -ntp -Pcentral-publishing -Dgpg.skip=true -DskipTests -f providers/icu4j/pom.xml validate
 
@@ -90,14 +116,14 @@ jobs:
           distribution: temurin
           java-version: '21'
           cache: maven
-      - name: Install the core artifact
-        run: mvn -B -ntp -Dmaven.test.skip=true -Dgpg.skip=true install
+      - name: Install the release API
+        run: mvn -B -ntp -f api/pom.xml -Dgpg.skip=true install
       - name: Build, package, and check the Lucene 10 provider
         run: mvn -B -ntp -f providers/lucene10/pom.xml clean verify
       - name: Verify license and notice in the provider JAR
         run: |
-          test -f providers/lucene10/target/linguamesh-provider-lucene10-1.0.0-SNAPSHOT-javadoc.jar
-          for archive in providers/lucene10/target/linguamesh-provider-lucene10-1.0.0-SNAPSHOT.jar providers/lucene10/target/linguamesh-provider-lucene10-1.0.0-SNAPSHOT-sources.jar; do
+          test -f providers/lucene10/target/linguamesh-provider-lucene10-1.0.0-javadoc.jar
+          for archive in providers/lucene10/target/linguamesh-provider-lucene10-1.0.0.jar providers/lucene10/target/linguamesh-provider-lucene10-1.0.0-sources.jar; do
             test -f "$archive"
             for resource in META-INF/LICENSE.txt META-INF/NOTICE.txt; do
               count=$(jar tf "$archive" | grep -Fxc "$resource" || true)
@@ -107,7 +133,7 @@ jobs:
               fi
             done
           done
-          unzip -p providers/lucene10/target/linguamesh-provider-lucene10-1.0.0-SNAPSHOT.jar META-INF/services/io.linguamesh.api.TextTokenizerProvider | grep -Fxc io.linguamesh.lucene.Lucene10TokenizerProvider | grep -Fxq 1
+          unzip -p providers/lucene10/target/linguamesh-provider-lucene10-1.0.0.jar META-INF/services/io.linguamesh.api.TextTokenizerProvider | grep -Fxc io.linguamesh.lucene.Lucene10TokenizerProvider | grep -Fxq 1
       - name: Validate Central publishing profile
         run: mvn -B -ntp -Pcentral-publishing -Dgpg.skip=true -DskipTests -f providers/lucene10/pom.xml validate
 
@@ -121,14 +147,14 @@ jobs:
           distribution: temurin
           java-version: '17'
           cache: maven
-      - name: Install the core artifact
-        run: mvn -B -ntp -Dmaven.test.skip=true -Dgpg.skip=true install
+      - name: Install the release API
+        run: mvn -B -ntp -f api/pom.xml -Dgpg.skip=true install
       - name: Build, package, and check the OpenNLP provider
         run: mvn -B -ntp -f providers/opennlp/pom.xml clean verify
       - name: Verify license and notice in the provider JAR
         run: |
-          test -f providers/opennlp/target/linguamesh-provider-opennlp-1.0.0-SNAPSHOT-javadoc.jar
-          for archive in providers/opennlp/target/linguamesh-provider-opennlp-1.0.0-SNAPSHOT.jar providers/opennlp/target/linguamesh-provider-opennlp-1.0.0-SNAPSHOT-sources.jar; do
+          test -f providers/opennlp/target/linguamesh-provider-opennlp-1.0.0-javadoc.jar
+          for archive in providers/opennlp/target/linguamesh-provider-opennlp-1.0.0.jar providers/opennlp/target/linguamesh-provider-opennlp-1.0.0-sources.jar; do
             test -f "$archive"
             for resource in META-INF/LICENSE.txt META-INF/NOTICE.txt; do
               count=$(jar tf "$archive" | grep -Fxc "$resource" || true)
@@ -138,7 +164,7 @@ jobs:
               fi
             done
           done
-          unzip -p providers/opennlp/target/linguamesh-provider-opennlp-1.0.0-SNAPSHOT.jar META-INF/services/io.linguamesh.api.TextTokenizerProvider | grep -Fxc io.linguamesh.opennlp.OpenNlpTokenizerProvider | grep -Fxq 1
+          unzip -p providers/opennlp/target/linguamesh-provider-opennlp-1.0.0.jar META-INF/services/io.linguamesh.api.TextTokenizerProvider | grep -Fxc io.linguamesh.opennlp.OpenNlpTokenizerProvider | grep -Fxq 1
       - name: Validate Central publishing profile
         run: mvn -B -ntp -Pcentral-publishing -Dgpg.skip=true -DskipTests -f providers/opennlp/pom.xml validate
 
@@ -165,15 +191,15 @@ jobs:
           dictionary=$(find "$directory" -type f -name system_core.dic -print -quit)
           test -n "$dictionary"
           echo "SUDACHI_DICTIONARY_PATH=$dictionary" >> "$GITHUB_ENV"
-      - name: Install the core artifact
-        run: mvn -B -ntp -Dmaven.test.skip=true -Dgpg.skip=true install
+      - name: Install the release API
+        run: mvn -B -ntp -f api/pom.xml -Dgpg.skip=true install
       - name: Build, package, and check the Sudachi provider
         run: mvn -B -ntp -f providers/sudachi/pom.xml clean verify
       - name: Verify license and notice in the provider JAR
         shell: bash
         run: |
-          test -f providers/sudachi/target/linguamesh-provider-sudachi-1.0.0-SNAPSHOT-javadoc.jar
-          for archive in providers/sudachi/target/linguamesh-provider-sudachi-1.0.0-SNAPSHOT.jar providers/sudachi/target/linguamesh-provider-sudachi-1.0.0-SNAPSHOT-sources.jar; do
+          test -f providers/sudachi/target/linguamesh-provider-sudachi-1.0.0-javadoc.jar
+          for archive in providers/sudachi/target/linguamesh-provider-sudachi-1.0.0.jar providers/sudachi/target/linguamesh-provider-sudachi-1.0.0-sources.jar; do
             test -f "$archive"
             for resource in META-INF/LICENSE.txt META-INF/NOTICE.txt; do
               count=$(jar tf "$archive" | grep -Fxc "$resource" || true)
@@ -183,6 +209,6 @@ jobs:
               fi
             done
           done
-          unzip -p providers/sudachi/target/linguamesh-provider-sudachi-1.0.0-SNAPSHOT.jar META-INF/services/io.linguamesh.api.TextTokenizerProvider | grep -Fxc io.linguamesh.sudachi.SudachiTokenizerProvider | grep -Fxq 1
+          unzip -p providers/sudachi/target/linguamesh-provider-sudachi-1.0.0.jar META-INF/services/io.linguamesh.api.TextTokenizerProvider | grep -Fxc io.linguamesh.sudachi.SudachiTokenizerProvider | grep -Fxq 1
       - name: Validate Central publishing profile
         run: mvn -B -ntp -Pcentral-publishing -Dgpg.skip=true -DskipTests -f providers/sudachi/pom.xml validate

@@ -4,7 +4,7 @@
 
     <groupId>io.github.archerkattri</groupId>
     <artifactId>linguamesh-provider-opennlp</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>LinguaMesh OpenNLP Provider</name>
     <description>Model-driven tokenization through Apache OpenNLP.</description>
     <url>https://github.com/Archerkattri/LinguaMesh</url>
@@ -30,7 +30,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>17</maven.compiler.release>
-        <linguamesh.version>1.0.0-SNAPSHOT</linguamesh.version>
+        <linguamesh.api.version>1.0.0</linguamesh.api.version>
         <opennlp.version>2.5.12</opennlp.version>
         <opennlp.models.version>1.3.0</opennlp.models.version>
         <junit.version>4.13.2</junit.version>
@@ -39,8 +39,8 @@
     <dependencies>
         <dependency>
             <groupId>io.github.archerkattri</groupId>
-            <artifactId>linguamesh-core</artifactId>
-            <version>${linguamesh.version}</version>
+            <artifactId>linguamesh-api</artifactId>
+            <version>${linguamesh.api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.opennlp</groupId>

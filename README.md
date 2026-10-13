@@ -9,10 +9,12 @@ This repository imports the history and code of [Ansj Seg](https://github.com/NL
 
 ## Providers
 
+The planned Maven Central release contains the provider-neutral API and ICU4J, Lucene, OpenNLP, and Sudachi providers. The Ansj compatibility implementation remains in this source repository but is not packaged for Central while the inherited data assets' redistribution rights are unresolved.
+
 | Provider | Coverage | Notes |
 |---|---|---|
-| `ansj` | Chinese | Existing dictionaries and analysis behavior; retains the `org.ansj` compatibility API. |
-| `ansj-index` | Chinese retrieval analysis | Uses Ansj `IndexAnalysis` to return all matched index terms, which can overlap. Use it for search indexing, not for a sequential display stream. An optional constructor accepts caller-owned `Forest` dictionaries. |
+| `ansj` | Chinese | Source-tree compatibility provider; excluded from Central pending data provenance review. |
+| `ansj-index` | Chinese retrieval analysis | Source-tree compatibility provider based on Ansj `IndexAnalysis`; excluded from Central. |
 | `icu4j` | Unicode word boundaries for locale-tagged text | General segmentation fallback, not a substitute for language-specific morphology. ICU supplies dictionary word breaking for Chinese, Japanese, Thai, Lao, Khmer, and Burmese. |
 | `lucene10` | Arabic, Armenian, Basque, Bengali, Brazilian Portuguese, Bulgarian, Catalan, Chinese, Czech, Danish, Dutch, English, Estonian, Finnish, French, Galician, German, Greek, Hindi, Hungarian, Indonesian, Irish, Italian, Japanese, Korean, Latvian, Lithuanian, Nepali, Norwegian, Persian, Portuguese, Romanian, Russian, Serbian, Sorani Kurdish, Spanish, Swedish, Tamil, Telugu, Thai, and Turkish; generic Unicode fallback for other tags | Uses Lucene language analyzers, Kuromoji for Japanese morphology, Nori for Korean morphology, and `CJKAnalyzer` for Chinese; `StandardAnalyzer` is the generic fallback. Some analyzers normalize, remove stop words, or stem; offsets still refer to the input. Requires Java 21. |
 | `sudachi` | Japanese | Morphological analysis with configurable A/B/C segmentation, POS, reading, dictionary-form, normalized-form, and OOV attributes. Uses Sudachi 0.8.2 and requires a caller-provided V1 dictionary; no dictionary is bundled. User dictionaries must be rebuilt against the exact system dictionary used at runtime. SudachiDict includes UniDic and NEologd data, so follow the dictionary's separate notices when redistributing it. Requires Java 8. |
@@ -22,13 +24,13 @@ Providers are optional Maven dependencies discovered with Java `ServiceLoader`. 
 
 ## Install
 
-The current coordinates are development snapshots and are not published to Maven Central:
+The coordinates below are for the prepared `1.0.0` Central release. They become installable after publication completes. Add this provider-neutral API before choosing one or more engines:
 
 ```xml
 <dependency>
   <groupId>io.github.archerkattri</groupId>
-  <artifactId>linguamesh-core</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <artifactId>linguamesh-api</artifactId>
+  <version>1.0.0</version>
 </dependency>
 ```
 
@@ -38,7 +40,7 @@ Add the Lucene 10 provider for language-specific search analysis:
 <dependency>
   <groupId>io.github.archerkattri</groupId>
   <artifactId>linguamesh-provider-lucene10</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0</version>
 </dependency>
 ```
 
@@ -48,7 +50,7 @@ Add the OpenNLP provider when an application supplies tokenizer models:
 <dependency>
   <groupId>io.github.archerkattri</groupId>
   <artifactId>linguamesh-provider-opennlp</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0</version>
 </dependency>
 ```
 
@@ -78,7 +80,7 @@ Add the Sudachi provider for Japanese morphological analysis. It does not bundle
 <dependency>
   <groupId>io.github.archerkattri</groupId>
   <artifactId>linguamesh-provider-sudachi</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0</version>
 </dependency>
 ```
 
@@ -105,7 +107,7 @@ Add the ICU4J provider when Unicode boundary tokenization is needed:
 <dependency>
   <groupId>io.github.archerkattri</groupId>
   <artifactId>linguamesh-provider-icu4j</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0</version>
 </dependency>
 ```
 
@@ -125,7 +127,7 @@ for (TextToken token : tokenizer.tokenize("ภาษาไทย")) {
 
 For direct access to the original Ansj API, use `ToAnalysis.parse(text)` and the `org.ansj` classes as before. Token offsets are zero-based, end-exclusive UTF-16 indices into the input string. A provider may return normalized token text, so use offsets to locate the original text rather than assuming the token equals its source substring.
 
-The core JAR includes the default Ansj configuration and dictionaries. Applications do not need to copy the repository's `library/` directory into their working directory; custom dictionary paths remain application-managed.
+The Central API/provider artifacts exclude the imported Ansj lexicons, matrices, and CRF model. For Chinese tokenization from Maven Central, use ICU4J or Lucene; the legacy `org.ansj` implementation remains in the source repository but is not part of these release artifacts.
 
 ## Build and integration checks
 
@@ -133,7 +135,8 @@ Requires JDK 8 or newer and Maven 3.6.3 or newer.
 
 ```sh
 mvn -B -ntp clean verify
-mvn -B -ntp -Dmaven.test.skip=true install
+mvn -B -ntp -f api/pom.xml clean verify
+mvn -B -ntp -f api/pom.xml -Dgpg.skip=true install
 mvn -B -ntp -f providers/icu4j/pom.xml clean verify
 mvn -B -ntp -f providers/lucene10/pom.xml clean verify
 mvn -B -ntp -f providers/opennlp/pom.xml clean verify
@@ -146,14 +149,18 @@ The historical integrations under `plugin/` are retained from Ansj for reference
 
 ## Maven Central release
 
-The `central-publishing` profile prepares signed artifacts and uploads them to the Central Portal for validation; it leaves the final publish action manual. A release requires a non-snapshot version, a verified `io.github.archerkattri` namespace, a GPG signing key, and a `central` user-token entry in the developer's Maven `settings.xml`. Never commit those credentials. The current version is a development snapshot and has not been published.
+The `central-publishing` profile signs and uploads the API/provider artifacts to the Central Portal for validation; the final publish action stays manual. The proposed release set is `linguamesh-api` plus the ICU4J, Lucene 10, OpenNLP, and Sudachi providers. The Ansj compatibility implementation is excluded until its bundled-data provenance is resolved. Publication requires a verified `io.github.archerkattri` namespace, a GPG signing key, and a `central` user-token entry in the developer's Maven `settings.xml`. Never commit those credentials.
 
 ```sh
-mvn -Dmaven.test.skip=true -Pcentral-publishing clean deploy
+mvn -f api/pom.xml -Pcentral-publishing clean deploy
+mvn -f providers/icu4j/pom.xml -Pcentral-publishing clean deploy
+mvn -f providers/lucene10/pom.xml -Pcentral-publishing clean deploy
+mvn -f providers/opennlp/pom.xml -Pcentral-publishing clean deploy
+mvn -f providers/sudachi/pom.xml -Pcentral-publishing clean deploy
 ```
 
 ## Credit and license
 
 LinguaMesh retains the Ansj Seg Apache License 2.0 and notices. The imported source history retains its recorded authorship; new provider code is maintained in this repository. Third-party engines and language models keep their own licenses and notices. See [LICENSE.txt](LICENSE.txt) and [NOTICE.txt](NOTICE.txt).
 
-The upstream Ansj repository does not identify the source or redistribution terms for its bundled dictionaries and CRF model. Those asset-level rights have not been verified; the Maven artifacts remain unpublished until provenance is established or the unresolved assets are excluded from release artifacts.
+The upstream Ansj repository does not identify the source or redistribution terms for its bundled dictionaries and CRF model. Those resources are kept out of the Central artifacts; their rights review remains open for any future release of the Ansj-compatible provider.
