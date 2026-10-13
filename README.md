@@ -7,6 +7,15 @@
 
 This repository imports the history and code of [Ansj Seg](https://github.com/NLPchina/ansj_seg), an Apache-2.0 Chinese text-analysis library. Existing `org.ansj` APIs remain available. New LinguaMesh APIs and providers are maintained separately; this project is independent and is not an official NLPchina release.
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/provider-map-dark.svg">
+  <img src="docs/provider-map.svg" alt="LinguaMesh flow from application text through ServiceLoader provider discovery and explicit engine selection to tokens with source offsets; six provider capabilities are compared below" width="100%">
+</picture>
+
+The provider map reflects the current adapters, not a claim that every engine
+uses the same definition of a word. Choose the provider for the task and
+language, and supply model or dictionary data where its provider requires it.
+
 ## Providers
 
 The planned Maven Central release contains the provider-neutral API and ICU4J, Lucene, OpenNLP, and Sudachi providers. The Ansj compatibility implementation remains in this source repository but is not packaged for Central while the inherited data assets' redistribution rights are unresolved.

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="690" viewBox="0 0 1200 690" role="img" aria-labelledby="title desc">
+  <title id="title">LinguaMesh provider architecture</title>
+  <desc id="desc">Applications discover optional tokenization providers through a registry, choose a provider and language tag, then receive tokens with source offsets and engine-specific attributes. Six providers cover Chinese analysis, Unicode boundaries, language analyzers, application-supplied models, and Japanese morphology.</desc>
+  <rect width="1200" height="690" fill="#111a28"/>
+  <text x="48" y="58" fill="#f1f5fb" font-family="Arial, sans-serif" font-size="29" font-weight="700">One token API, engines chosen by the application</text>
+  <text x="48" y="91" fill="#b3c2d6" font-family="Arial, sans-serif" font-size="16">Each provider is optional. Install the engine you need; select it explicitly when more than one fits.</text>
+  <g font-family="Arial, sans-serif">
+    <rect x="48" y="124" width="235" height="104" rx="8" fill="#192638" stroke="#50647c" stroke-width="2"/><text x="70" y="160" fill="#80b5ff" font-size="13" font-weight="700">APPLICATION</text><text x="70" y="194" fill="#f1f5fb" font-family="Consolas, monospace" font-size="17">input text + language</text>
+    <path d="M283 176h48" stroke="#80b5ff" stroke-width="3"/><path d="m331 168 14 8-14 8" fill="none" stroke="#80b5ff" stroke-width="3"/>
+    <rect x="346" y="124" width="240" height="104" rx="8" fill="#1b2d45" stroke="#6289bd" stroke-width="2"/><text x="368" y="160" fill="#80b5ff" font-size="13" font-weight="700">DISCOVERY</text><text x="368" y="194" fill="#f1f5fb" font-family="Consolas, monospace" font-size="17">ServiceLoader registry</text>
+    <path d="M586 176h48" stroke="#80b5ff" stroke-width="3"/><path d="m634 168 14 8-14 8" fill="none" stroke="#80b5ff" stroke-width="3"/>
+    <rect x="649" y="124" width="240" height="104" rx="8" fill="#1b2d45" stroke="#6289bd" stroke-width="2"/><text x="671" y="160" fill="#80b5ff" font-size="13" font-weight="700">SELECTION</text><text x="671" y="194" fill="#f1f5fb" font-family="Consolas, monospace" font-size="17">provider + BCP 47 tag</text>
+    <path d="M889 176h48" stroke="#80b5ff" stroke-width="3"/><path d="m937 168 14 8-14 8" fill="none" stroke="#80b5ff" stroke-width="3"/>
+    <rect x="952" y="124" width="200" height="104" rx="8" fill="#192638" stroke="#55b99b" stroke-width="2"/><text x="974" y="160" fill="#71d5b4" font-size="13" font-weight="700">RESULT</text><text x="974" y="190" fill="#f1f5fb" font-family="Consolas, monospace" font-size="17">TextToken[]</text><text x="974" y="213" fill="#b3c2d6" font-size="13">text · offsets · attributes</text>
+  </g>
+  <text x="48" y="280" fill="#f1f5fb" font-family="Arial, sans-serif" font-size="20" font-weight="700">Available engines</text>
+  <g font-family="Arial, sans-serif" fill="#f1f5fb">
+    <rect x="48" y="304" width="538" height="86" rx="7" fill="#192638" stroke="#40536a"/><text x="70" y="337" font-size="17" font-weight="700">Ansj</text><text x="70" y="366" fill="#b3c2d6" font-size="15">Chinese segmentation; retains the org.ansj compatibility API.</text>
+    <rect x="614" y="304" width="538" height="86" rx="7" fill="#192638" stroke="#40536a"/><text x="636" y="337" font-size="17" font-weight="700">Ansj Index</text><text x="636" y="366" fill="#b3c2d6" font-size="15">Chinese retrieval terms; results can overlap and are not a display stream.</text>
+    <rect x="48" y="404" width="538" height="86" rx="7" fill="#192638" stroke="#40536a"/><text x="70" y="437" font-size="17" font-weight="700">ICU4J</text><text x="70" y="466" fill="#b3c2d6" font-size="15">Locale-aware boundaries, including Chinese, Japanese, and Thai.</text>
+    <rect x="614" y="404" width="538" height="86" rx="7" fill="#192638" stroke="#40536a"/><text x="636" y="437" font-size="17" font-weight="700">Lucene 10</text><text x="636" y="466" fill="#b3c2d6" font-size="15">Language analyzers, plus a generic Unicode fallback.</text>
+    <rect x="48" y="504" width="538" height="86" rx="7" fill="#192638" stroke="#40536a"/><text x="70" y="537" font-size="17" font-weight="700">OpenNLP</text><text x="70" y="566" fill="#b3c2d6" font-size="15">Tokenization for models supplied and managed by the application.</text>
+    <rect x="614" y="504" width="538" height="86" rx="7" fill="#192638" stroke="#40536a"/><text x="636" y="537" font-size="17" font-weight="700">Sudachi</text><text x="636" y="566" fill="#b3c2d6" font-size="15">Japanese morphology with configurable split modes and external dictionaries.</text>
+  </g>
+  <path d="M48 620h1104" stroke="#40536a"/><text x="48" y="650" fill="#b3c2d6" font-family="Arial, sans-serif" font-size="14">Offsets are zero-based, end-exclusive UTF-16 indices into the input. Token text may be normalized by the selected engine.</text>
+</svg>
