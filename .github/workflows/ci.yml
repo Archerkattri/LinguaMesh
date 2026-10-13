@@ -152,14 +152,14 @@ jobs:
           distribution: temurin
           java-version: '8'
           cache: maven
-      - name: Download the pinned Sudachi V0 test dictionary
+      - name: Download the pinned Sudachi V1 test dictionary
         shell: bash
         run: |
-          archive="$RUNNER_TEMP/sudachi-dictionary-20260723-core.zip"
+          archive="$RUNNER_TEMP/sudachi-dictionary-20260723-v1-core.zip"
           directory="$RUNNER_TEMP/sudachi-dictionary"
           curl --fail --location --retry 3 --output "$archive" \
-            https://sudachi.s3.ap-northeast-1.amazonaws.com/sudachidict/sudachi-dictionary-20260723-core.zip
-          echo "b6e835f63440f97474c2da45d80950f73746e632e40bbfc168b4041729135e1f  $archive" | sha256sum --check --status
+            https://sudachi.s3.ap-northeast-1.amazonaws.com/sudachidict/v1/sudachi-dictionary-20260723-core.zip
+          echo "9dd45e5b730a3e7b282267a951d083dbd73ddf9323355a90d0ae05dfd2c0a18d  $archive" | sha256sum --check --status
           mkdir -p "$directory"
           unzip -q "$archive" -d "$directory"
           dictionary=$(find "$directory" -type f -name system_core.dic -print -quit)
