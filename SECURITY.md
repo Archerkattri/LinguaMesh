@@ -1,21 +1,11 @@
 # Security Policy
 
-## Supported Versions
+## Supported versions
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
+LinguaMesh has not published a stable release. Security fixes are made on `master`; no versioned releases are currently supported.
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+## Reporting a vulnerability
 
-## Reporting a Vulnerability
+Use GitHub's private vulnerability reporting for this repository. Include the affected component and version, the conditions needed to reproduce the issue, and its security impact. Do not report vulnerabilities in public issues or disclose them publicly before coordinating a fix.
 
-Use this section to tell people how to report a vulnerability.
-
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-declined, etc.
+The maintainers will acknowledge reports and coordinate next steps through the private advisory. Response times depend on severity and maintainer availability; no fixed service-level commitment is offered.
