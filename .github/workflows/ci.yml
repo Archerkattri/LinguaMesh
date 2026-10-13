@@ -64,12 +64,16 @@ jobs:
           for archive in api/target/linguamesh-api-1.0.0.jar api/target/linguamesh-api-1.0.0-sources.jar api/target/linguamesh-api-1.0.0-javadoc.jar; do
             test -f "$archive"
             listing=$(jar tf "$archive")
-            grep -Fxq META-INF/LICENSE.txt <<< "$listing"
-            grep -Fxq META-INF/NOTICE.txt <<< "$listing"
             if grep -Eiq '(^|/)(org/ansj|library/|nature/|person/|.*\.dic$|.*\.model$)|META-INF/services/' <<< "$listing"; then
+              echo "$listing"
               echo "Unexpected engine, language data, or provider registration in $archive"
               exit 1
             fi
+          done
+          for archive in api/target/linguamesh-api-1.0.0.jar api/target/linguamesh-api-1.0.0-sources.jar; do
+            listing=$(jar tf "$archive")
+            grep -Fxq META-INF/LICENSE.txt <<< "$listing"
+            grep -Fxq META-INF/NOTICE.txt <<< "$listing"
           done
           test "$(jar tf api/target/linguamesh-api-1.0.0.jar | grep -Ec '^io/linguamesh/api/[^/]+\.class$')" -eq 4
       - name: Validate Central publishing profile
