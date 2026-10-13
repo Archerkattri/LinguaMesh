@@ -4,7 +4,7 @@
 
     <groupId>io.github.archerkattri</groupId>
     <artifactId>linguamesh-provider-sudachi</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>LinguaMesh Sudachi Provider</name>
     <description>Japanese morphological tokenization through Sudachi.</description>
     <url>https://github.com/Archerkattri/LinguaMesh</url>
@@ -30,7 +30,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>8</maven.compiler.release>
-        <linguamesh.version>1.0.0-SNAPSHOT</linguamesh.version>
+        <linguamesh.api.version>1.0.0</linguamesh.api.version>
         <sudachi.version>0.8.2</sudachi.version>
         <junit.version>4.13.2</junit.version>
     </properties>
@@ -38,8 +38,8 @@
     <dependencies>
         <dependency>
             <groupId>io.github.archerkattri</groupId>
-            <artifactId>linguamesh-core</artifactId>
-            <version>${linguamesh.version}</version>
+            <artifactId>linguamesh-api</artifactId>
+            <version>${linguamesh.api.version}</version>
         </dependency>
         <dependency>
             <groupId>com.worksap.nlp</groupId>
