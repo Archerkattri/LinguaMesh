@@ -41,6 +41,7 @@ public class Counter {
      * @param size         统计的最大数字。超过数字做搜索 size*20% -》 size
      * @param recognitions 过滤条件
      * @return 分词后的统计结果
+     * The caller must authorize this path before passing values derived from untrusted input.
      */
     public static Result count(File file, String encoding, Analysis analysis, int size, Recognition... recognitions) {
         if (recognitions == null || recognitions.length < 1) {

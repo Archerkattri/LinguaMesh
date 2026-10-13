@@ -2,10 +2,14 @@ package org.ansj.app.crf.model;
 
 import org.ansj.app.crf.Config;
 import org.ansj.app.crf.Model;
+import org.ansj.util.AllowlistedObjectInputStream;
 import org.nlpcn.commons.lang.tire.domain.SmartForest;
 import org.nlpcn.commons.lang.util.IOUtil;
 
 import java.io.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipException;
 
@@ -18,6 +22,7 @@ import java.util.zip.ZipException;
 public class CRFModel extends Model {
 
 	public static final String version = "ansj1";
+	private static final Set<String> MODEL_CLASSES = new HashSet<>(Arrays.asList("[F", "[[F", "[I", "[[I"));
 
 	@Override
 	public CRFModel loadModel(String modelPath) throws Exception {
@@ -30,7 +35,7 @@ public class CRFModel extends Model {
 	@Override
 	public CRFModel loadModel(InputStream is) throws Exception {
 		long start = System.currentTimeMillis();
-		try (ObjectInputStream ois = new ObjectInputStream(new GZIPInputStream(is))) {
+		try (ObjectInputStream ois = new AllowlistedObjectInputStream(new GZIPInputStream(is), MODEL_CLASSES)) {
 			ois.readUTF();
 			this.status = (float[][]) ois.readObject();
 			int[][] template = (int[][]) ois.readObject();
